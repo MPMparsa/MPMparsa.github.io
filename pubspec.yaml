@@ -19,6 +19,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: "^0.13.1"
 
 flutter:
   uses-material-design: true
@@ -28,4 +29,8 @@ flutter:
     - family: Parisienne
       fonts:
         - asset: assets/fonts/Parisienne-Regular.ttf
-
+flutter_launcher_icons:
+  image_path: "assets/icon/MPM.png" # <--- IMPORTANT: This is the path to your new icon
+  web:
+    generate: true
+    image_path: "assets/icon/MPM.png" # <--- IMPORTANT: Path for web icons
