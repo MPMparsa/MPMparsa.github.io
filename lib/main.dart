@@ -60,13 +60,13 @@ class _ResumePageState extends State<ResumePage> {
 
   final Map<String, bool> _sectionHasBeenVisible = {};
 
-  // OPTIMIZATION: Pre-cache the background image for faster display.
+  // Pre-cache both background images for faster display.
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     precacheImage(const AssetImage('assets/images/profile_background.jpg'), context);
+    precacheImage(const AssetImage('assets/images/profile_photo.jpg'), context);
   }
-
 
   @override
   void initState() {
@@ -116,48 +116,59 @@ class _ResumePageState extends State<ResumePage> {
       ),
       body: Stack(
         children: [
-          const HeroImageBackground(),
+          // This is now the SITE-WIDE background. It's always visible.
+          const SiteWideImageBackground(),
           Center(
             child: SingleChildScrollView(
               controller: _scrollController,
               child: Container(
                 constraints: const BoxConstraints(maxWidth: 1000),
-                padding:
-                const EdgeInsets.symmetric(horizontal: 40, vertical: 60),
-                child: Column(
+                child: Column( // Removed Padding to allow header to be full-width
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const HeroSection(),
-                    const SizedBox(height: 100),
-                    _buildLazySection(
-                        key: aboutKey,
-                        sectionKey: 'about',
-                        title: 'About Me',
-                        child: const AboutSection()),
-                    const SizedBox(height: 80),
-                    _buildLazySection(
-                        key: experienceKey,
-                        sectionKey: 'experience',
-                        title: 'Experience & Education',
-                        child: const ExperienceSection()),
-                    const SizedBox(height: 80),
-                    _buildLazySection(
-                        key: projectsKey,
-                        sectionKey: 'projects',
-                        title: 'Projects & Rewards',
-                        child: const ProjectsSection()),
-                    const SizedBox(height: 80),
-                    _buildLazySection(
-                        key: skillsKey,
-                        sectionKey: 'skills',
-                        title: 'Technical Skills',
-                        child: const SkillsSection()),
-                    const SizedBox(height: 80),
-                    _buildLazySection(
-                        key: contactKey,
-                        sectionKey: 'contact',
-                        title: '', // Footer has its own title
-                        child: const FooterSection()),
+                    // NEW: The header section now contains the HeroSection content
+                    // and its own unique, responsive background.
+                    const HeaderWithDynamicBackground(),
+
+                    // The rest of the content has its own padding
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 60),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 100),
+                          _buildLazySection(
+                              key: aboutKey,
+                              sectionKey: 'about',
+                              title: 'About Me',
+                              child: const AboutSection()),
+                          const SizedBox(height: 80),
+                          _buildLazySection(
+                              key: experienceKey,
+                              sectionKey: 'experience',
+                              title: 'Experience & Education',
+                              child: const ExperienceSection()),
+                          const SizedBox(height: 80),
+                          _buildLazySection(
+                              key: projectsKey,
+                              sectionKey: 'projects',
+                              title: 'Projects & Rewards',
+                              child: const ProjectsSection()),
+                          const SizedBox(height: 80),
+                          _buildLazySection(
+                              key: skillsKey,
+                              sectionKey: 'skills',
+                              title: 'Technical Skills',
+                              child: const SkillsSection()),
+                          const SizedBox(height: 80),
+                          _buildLazySection(
+                              key: contactKey,
+                              sectionKey: 'contact',
+                              title: '', // Footer has its own title
+                              child: const FooterSection()),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -214,17 +225,17 @@ class _ResumePageState extends State<ResumePage> {
   }
 }
 
-class HeroImageBackground extends StatelessWidget {
-  const HeroImageBackground({super.key});
+// RENAMED from HeroImageBackground
+class SiteWideImageBackground extends StatelessWidget {
+  const SiteWideImageBackground({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // FIX: Corrected asset path
         Image.asset(
-          'assets/assets/images/profile_background.jpg',
+          'assets/images/profile_background.jpg',
           fit: BoxFit.cover,
         ),
         Container(
@@ -256,8 +267,66 @@ class HeroImageBackground extends StatelessWidget {
   }
 }
 
+
+// --- NEW WIDGET: HEADER WITH DYNAMIC BACKGROUND ---
+// This widget creates a responsive background for the top hero section only.
+class HeaderWithDynamicBackground extends StatelessWidget {
+  const HeaderWithDynamicBackground({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      // This height should match the height of your HeroSection content
+      height: MediaQuery.of(context).size.height * 0.8,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Layer 1: The new background image
+          Image.asset(
+            'assets/images/profile_photo.jpg',
+            // ** This is the key part! **
+            // BoxFit.cover makes the image always fill the container,
+            // maintaining its aspect ratio by cropping the excess.
+            fit: BoxFit.cover,
+            // ** This centers the image **
+            // We align it to the center-top to keep your head in view.
+            // You can tweak these values, e.g., Alignment(0.0, -0.4)
+            alignment: const Alignment(0.0, -0.5),
+          ),
+
+          // Layer 2: A dark gradient overlay from the bottom
+          // This makes the text at the bottom of the section more readable.
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  Colors.black54,
+                ],
+                stops: [0.5, 1.0],
+              ),
+            ),
+          ),
+
+          // Layer 3: The actual HeroSection content (text, buttons)
+          // It's wrapped in padding to keep it from the screen edges.
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 40.0),
+            child: HeroSection(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
 // --- SECTIONS ---
 
+// IMPORTANT: HeroSection no longer needs its own SizedBox wrapper,
+// because that is now handled by HeaderWithDynamicBackground.
 class HeroSection extends StatelessWidget {
   const HeroSection({super.key});
 
@@ -267,51 +336,49 @@ class HeroSection extends StatelessWidget {
     final double titleSize = screenWidth < 600 ? 52 : 82;
     final double subtitleSize = screenWidth < 600 ? 22 : 28;
 
-    return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.8,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Mohammad Parsa Malek',
-            style: TextStyle(
-                fontFamily: 'Parisienne',
-                fontSize: titleSize,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textHeader),
-          ).animate().fadeIn(delay: 300.ms, duration: 500.ms).slideX(begin: -0.2),
-          const SizedBox(height: 8),
-          Text(
-            'Bioelectric Engineer | AI Expert | Software&EmbeddedSystem Developer',
-            style: TextStyle(
-                fontSize: subtitleSize,
-                color: AppColors.secondary,
-                fontWeight: FontWeight.w500),
-          ).animate().fadeIn(delay: 400.ms, duration: 500.ms).slideX(begin: -0.2),
-          const SizedBox(height: 24),
-          const Text(
-            "A dedicated and innovative bioelectric engineer and AI expert with a passion for developing elegant software solutions. Proficient in deploying ML models and bridging the gap between hardware and software with embedded systems and Flutter.",
-            style:
-            TextStyle(fontSize: 16, color: AppColors.textBody, height: 1.6),
-          ).animate().fadeIn(delay: 500.ms, duration: 500.ms).slideX(begin: -0.2),
-          const SizedBox(height: 32),
-          ElevatedButton(
-            onPressed: () =>
-                _launchURL(context, 'mailto:mohamadparsamalek.30@gmail.com'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.secondary,
-              foregroundColor: AppColors.background,
-              padding:
-              const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-            ),
-            child: const Text('Get In Touch',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-          ).animate().fadeIn(delay: 600.ms, duration: 500.ms),
-        ],
-      ),
+    // No SizedBox here anymore
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Mohammad Parsa Malek',
+          style: TextStyle(
+              fontFamily: 'Parisienne',
+              fontSize: titleSize,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textHeader),
+        ).animate().fadeIn(delay: 300.ms, duration: 500.ms).slideX(begin: -0.2),
+        const SizedBox(height: 8),
+        Text(
+          'Bioelectric Engineer | AI Expert | Software&EmbeddedSystem Developer',
+          style: TextStyle(
+              fontSize: subtitleSize,
+              color: AppColors.secondary,
+              fontWeight: FontWeight.w500),
+        ).animate().fadeIn(delay: 400.ms, duration: 500.ms).slideX(begin: -0.2),
+        const SizedBox(height: 24),
+        const Text(
+          "A dedicated and innovative bioelectric engineer and AI expert with a passion for developing elegant software solutions. Proficient in deploying ML models and bridging the gap between hardware and software with embedded systems and Flutter.",
+          style:
+          TextStyle(fontSize: 16, color: AppColors.textBody, height: 1.6),
+        ).animate().fadeIn(delay: 500.ms, duration: 500.ms).slideX(begin: -0.2),
+        const SizedBox(height: 32),
+        ElevatedButton(
+          onPressed: () =>
+              _launchURL(context, 'mailto:mohamadparsamalek.30@gmail.com'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.secondary,
+            foregroundColor: AppColors.background,
+            padding:
+            const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8)),
+          ),
+          child: const Text('Get In Touch',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+        ).animate().fadeIn(delay: 600.ms, duration: 500.ms),
+      ],
     );
   }
 }
@@ -402,7 +469,7 @@ class ExperienceSection extends StatelessWidget {
         ExperienceTile(
           isLast: true,
           company: 'Sharif university of technology',
-          title: 'Bachelor: Electrical Engineering- Bioelectric',
+          title: 'Bachelor: Biomedical Engineering- Bioelectric',
           period: '2022 - Present',
           description:
           'Pursuing a rigorous curriculum focused on the intersection of electrical engineering and biological systems, with projects in signal processing and embedded systems.',
@@ -532,8 +599,7 @@ class FooterSection extends StatelessWidget {
         const SizedBox(height: 40),
         OutlinedButton(
           onPressed: () {
-            // FIX: Corrected asset path for the PDF
-            _launchURL(context, 'assets/assets/Mohammad-Parsa-Malek-Resume.pdf');
+            _launchURL(context, 'assets/Mohammad-Parsa-Malek-Resume.pdf');
           },
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.secondary,
