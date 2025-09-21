@@ -66093,7 +66093,7 @@ A.Uy.prototype={
 $0(){return A.lF(this.a,"https://t.me/TheLordMpM")},
 $S:0}
 A.Uz.prototype={
-$0(){A.lF(this.a,"assets/Mohammad-Parsa-Malek-Resume.pdf")},
+$0(){A.lF(this.a,"assets/assets/Mohammad-Parsa-Malek-Resume.pdf")},
 $S:0}
 A.UA.prototype={
 $0(){var s=0,r=A.R(t.H),q=this,p

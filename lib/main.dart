@@ -599,7 +599,7 @@ class FooterSection extends StatelessWidget {
         const SizedBox(height: 40),
         OutlinedButton(
           onPressed: () {
-            _launchURL(context, 'assets/Mohammad-Parsa-Malek-Resume.pdf');
+            _launchURL(context, 'assets/assets/Mohammad-Parsa-Malek-Resume.pdf');
           },
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.secondary,
