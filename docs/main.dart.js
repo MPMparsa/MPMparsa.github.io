@@ -66839,7 +66839,7 @@ q.RV(s,B.D8,s,s,r,s,s,s,t.l7)
 return A.aeC(B.ch,A.Go(A.jM(q,s,A.bj(8e5,0,0)),0.3,A.bj(6e5,0,0)),20,20)}}
 A.D9.prototype={
 J(a){var s=null,r=t.p
-return A.Go(A.jM(A.jw(A.fc(A.c([B.Pp,B.wa,B.Pj,B.Jx,A.mP(A.c([A.adz(s,s,B.BX,30,s,new A.SY(a),s,s,"LinkedIn"),B.w8,A.adz(s,s,B.BU,30,s,new A.SZ(a),s,s,"Telegram")],r),B.a7,B.bI,B.a1),B.wb,new A.Et(new A.T_(a),s,s,s,A.arU(s,s,s,s,s,s,s,s,s,B.N,s,s,B.AV,s,new A.c8(A.rx(8),B.q),B.xt,s,s,s,s),s,s,!1,s,!0,s,B.Pd,s),B.wb,A.ah6(B.Pk,new A.T0(a),A.ah7(s,s,B.as,s,s,s,s,s,s,B.N,s,s,B.kW,s,new A.c8(A.rx(8),B.q),s,s,s,s,s)),B.Jz,B.Pi],r),B.a7,B.a8,B.a1),s),s,A.bj(8e5,0,0)),0.3,A.bj(6e5,0,0))}}
+return A.Go(A.jM(A.jw(A.fc(A.c([B.Pp,B.wa,B.Pi,B.Jx,A.mP(A.c([A.adz(s,s,B.BX,30,s,new A.SY(a),s,s,"LinkedIn"),B.w8,A.adz(s,s,B.BU,30,s,new A.SZ(a),s,s,"Telegram")],r),B.a7,B.bI,B.a1),B.wb,new A.Et(new A.T_(a),s,s,s,A.arU(s,s,s,s,s,s,s,s,s,B.N,s,s,B.AV,s,new A.c8(A.rx(8),B.q),B.xt,s,s,s,s),s,s,!1,s,!0,s,B.Pd,s),B.wb,A.ah6(B.Pj,new A.T0(a),A.ah7(s,s,B.as,s,s,s,s,s,s,B.N,s,s,B.kW,s,new A.c8(A.rx(8),B.q),s,s,s,s,s)),B.Jz,B.Pk],r),B.a7,B.a8,B.a1),s),s,A.bj(8e5,0,0)),0.3,A.bj(6e5,0,0))}}
 A.SY.prototype={
 $0(){return A.l6(this.a,"https://www.linkedin.com/in/mohamadparsa-malek-0214322a2")},
 $S:0}
@@ -72130,11 +72130,11 @@ B.Pe=new A.bY("About",null,null,null,null)
 B.Pf=new A.bY("Core Competencies",null,B.ww,null,null)
 B.Pg=new A.bY("Experience",null,null,null,null)
 B.Ph=new A.bY("Setup Chess Game",null,null,null,null)
-B.OF=new A.j(!0,null,null,null,null,null,12,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.Pi=new A.bY("Designed & Built by Mohammad Parsa Malek",null,B.OF,null,null)
 B.NA=new A.j(!0,B.bh,null,null,null,null,16,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.Pj=new A.bY("Feel free to reach out for collaborations or just a friendly hello!",null,B.NA,B.dU,null)
-B.Pk=new A.bY("Boring...?, try this",null,B.jb,null,null)
+B.Pi=new A.bY("Feel free to reach out for collaborations or just a friendly hello!",null,B.NA,B.dU,null)
+B.Pj=new A.bY("Boring...?, try this",null,B.jb,null,null)
+B.OF=new A.j(!0,null,null,null,null,null,12,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
+B.Pk=new A.bY("Designed & Built by Mohammad Parsa Malek.",null,B.OF,null,null)
 B.Pl=new A.bY("Time per player (minutes):",null,null,null,null)
 B.Pm=new A.bY("Pass-and-Play Chess",null,null,null,null)
 B.Pn=new A.bY("Get In Touch",null,B.jb,null,null)
