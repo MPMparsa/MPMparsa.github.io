@@ -5,13 +5,17 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'games.dart'; // Import the new games page
+import 'package:visibility_detector/visibility_detector.dart';
+
+// OPTIMIZATION: Deferred loading for the games page.
+// This tells Flutter not to load 'games.dart' until we specifically ask for it.
+import 'games.dart' deferred as games;
 
 // --- App Theme and Colors ---
 class AppColors {
   static const Color background = Color(0xFF0A192F);
   static const Color primary = Color(0xFF003B8E);
-  static const Color secondary = Color(0xFF64FFDA); // A more vibrant, techy accent
+  static const Color secondary = Color(0xFF64FFDA);
   static const Color backgroundEnd = Color(0xFF112240);
   static const Color cardColor = Color(0xFF112240);
   static const Color textHeader = Color(0xFFCCD6F6);
@@ -49,13 +53,15 @@ class ResumePage extends StatefulWidget {
 }
 
 class _ResumePageState extends State<ResumePage> {
-  // Keys for scrolling to sections
   final aboutKey = GlobalKey();
   final experienceKey = GlobalKey();
   final skillsKey = GlobalKey();
   final projectsKey = GlobalKey();
   final contactKey = GlobalKey();
   late ScrollController _scrollController;
+
+  // Map to track which sections have been made visible to trigger animations once.
+  final Map<String, bool> _sectionHasBeenVisible = {};
 
   @override
   void initState() {
@@ -118,26 +124,91 @@ class _ResumePageState extends State<ResumePage> {
                   children: [
                     const HeroSection(),
                     const SizedBox(height: 100),
-                    SectionTitle(key: aboutKey, title: 'About Me'),
-                    const AboutSection(),
+                    // Sections are now wrapped in a lazy-loading widget.
+                    _buildLazySection(
+                        key: aboutKey,
+                        sectionKey: 'about',
+                        title: 'About Me',
+                        child: const AboutSection()),
                     const SizedBox(height: 80),
-                    SectionTitle(
-                        key: experienceKey, title: 'Experience & Education'),
-                    const ExperienceSection(),
+                    _buildLazySection(
+                        key: experienceKey,
+                        sectionKey: 'experience',
+                        title: 'Experience & Education',
+                        child: const ExperienceSection()),
                     const SizedBox(height: 80),
-                    SectionTitle(key: projectsKey, title: 'Projects'),
-                    const ProjectsSection(),
+                    _buildLazySection(
+                        key: projectsKey,
+                        sectionKey: 'projects',
+                        title: 'Projects & Rewards',
+                        child: const ProjectsSection()),
                     const SizedBox(height: 80),
-                    SectionTitle(key: skillsKey, title: 'Technical Skills'),
-                    const SkillsSection(),
+                    _buildLazySection(
+                        key: skillsKey,
+                        sectionKey: 'skills',
+                        title: 'Technical Skills',
+                        child: const SkillsSection()),
                     const SizedBox(height: 80),
-                    FooterSection(key: contactKey),
+                    _buildLazySection(
+                        key: contactKey,
+                        sectionKey: 'contact',
+                        title: '', // Footer has its own title
+                        child: const FooterSection()),
                   ],
                 ),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // Widget to handle lazy loading of sections
+  Widget _buildLazySection({
+    required GlobalKey key,
+    required String sectionKey,
+    required String title,
+    required Widget child,
+  }) {
+    // If the section has already been visible, just show it.
+    if (_sectionHasBeenVisible[sectionKey] == true) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (title.isNotEmpty) SectionTitle(key: key, title: title),
+          child,
+        ],
+      );
+    }
+
+    // Otherwise, use VisibilityDetector to build it when it comes into view.
+    return VisibilityDetector(
+      key: Key(sectionKey),
+      onVisibilityChanged: (info) {
+        if (info.visibleFraction > 0.1) {
+          // Check if the widget is still in the tree before calling setState
+          if (mounted) {
+            setState(() {
+              _sectionHasBeenVisible[sectionKey] = true;
+            });
+          }
+        }
+      },
+      child: _sectionHasBeenVisible[sectionKey] == true
+          ? Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (title.isNotEmpty) SectionTitle(key: key, title: title),
+          child,
+        ],
+      )
+          : SizedBox(
+        key: key,
+        height: 300, // Placeholder with a height
+        child: const Center(
+            child:
+            CircularProgressIndicator(color: AppColors.secondary)),
       ),
     );
   }
@@ -150,7 +221,6 @@ class HeroSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Responsive font sizing
     final screenWidth = MediaQuery.of(context).size.width;
     final double titleSize = screenWidth < 600 ? 52 : 82;
     final double subtitleSize = screenWidth < 600 ? 22 : 28;
@@ -211,43 +281,42 @@ class AboutSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: AppColors.cardColor.withAlpha(128),
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
+      child: const Padding(
+        padding: EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Personal Information",
+            Text("Personal Information",
                 style: TextStyle(
                     fontFamily: 'Parisienne',
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textHeader)),
-            const SizedBox(height: 16),
-            const InfoRow(label: "Age", value: "21 Years"),
-            const InfoRow(label: "Location", value: "Tehran, Tehran"),
-            const InfoRow(label: "Phone", value: "+98 990 010 0336"),
-            const InfoRow(
+            SizedBox(height: 16),
+            InfoRow(label: "Age", value: "21 Years"),
+            InfoRow(label: "Location", value: "Tehran, Tehran"),
+            InfoRow(label: "Phone", value: "+98 990 010 0336"),
+            InfoRow(
                 label: "Email", value: "mohamadparsamalek.30@gmail.com"),
-            const Divider(color: AppColors.textBody, height: 32),
-            const Text("Core Competencies",
+            Divider(color: AppColors.textBody, height: 32),
+            Text("Core Competencies",
                 style: TextStyle(
                     fontFamily: 'Parisienne',
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textHeader)),
-            const SizedBox(height: 16),
-            const SkillBullet(text: "Embedded system designer"),
-            const SkillBullet(text: "Circuit designer using Altuim designer"),
-            const SkillBullet(
+            SizedBox(height: 16),
+            SkillBullet(text: "Embedded system designer"),
+            SkillBullet(text: "Circuit designer using Altuim designer"),
+            SkillBullet(
                 text:
                 "Machine Learning algorithm implementation in MATLAB, Python, and on embedded systems"),
-            const SkillBullet(text: "Programming of ARM microcontrollers"),
+            SkillBullet(text: "Programming of ARM microcontrollers"),
           ],
         ),
       ),
     )
-        .animate(
-        onPlay: (controller) => controller.repeat(reverse: true))
+        .animate(onPlay: (controller) => controller.repeat(reverse: true))
         .shimmer(
         delay: 2000.ms,
         duration: 1000.ms,
@@ -263,9 +332,9 @@ class ExperienceSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       children: [
-        const ExperienceTile(
+        ExperienceTile(
           isFirst: true,
           company: 'Parsiss (Navigation in Surgical System) Co.',
           title: 'Image Processing on DICOM Images',
@@ -274,21 +343,21 @@ class ExperienceSection extends StatelessWidget {
           'Focused on surface detection and registration of medical DICOM images for use in surgical navigation systems.',
           companyUrl: 'http://www.parsiss.com/',
         ),
-        const ExperienceTile(
+        ExperienceTile(
           company: 'Sharif University',
           title: 'LLM Job Agent Hackathon (14th Place)',
           period: '5 May 2025',
           description:
           'Participated in a competitive hackathon focused on creating and deploying Large Language Model agents for job-related tasks, achieving a top 15 rank.',
         ),
-        const ExperienceTile(
+        ExperienceTile(
           company: 'atieh sazan',
           title: 'UI/UX developer',
           period: '07/2024 - 12/2024',
           description:
           'Contributed to the user interface and experience design for various software applications, focusing on creating intuitive and user-friendly products.',
         ),
-        const ExperienceTile(
+        ExperienceTile(
           isLast: true,
           company: 'Sharif university of technology',
           title: 'Bachelor: Biomedical Engineering- Bioelectric',
@@ -308,23 +377,18 @@ class ProjectsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: AppColors.cardColor.withAlpha(128),
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
+      child: const Padding(
+        padding: EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Select Projects",
-                style: TextStyle(
-                    fontFamily: 'Parisienne',
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            const ProjectTile(
-              title: "Project Portfolio",
+            SizedBox(height: 16),
+            ProjectTile(
+              title: "Project/Rewards Portfolio",
               description:
-              "A collection of my volunteer and course projects, including 'My Reward' and AI implementations.",
+              "A collection of my volunteer and course projects, including 'My Reward' and AI implementations and Embedded projects.",
               link:
-              "https://drive.google.com/drive/folders/1SHjofwtOaYAAcyYHiYoLjGvaeAMnc3c0",
+              "https://drive.google.com/drive/folders/1SHjofwtOaYAAcyYHiYoLjGvaeAMnc3cO",
             ),
           ],
         ),
@@ -338,11 +402,11 @@ class SkillsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Note: Can't be const because of the .animate() call on the list
     return Wrap(
       spacing: 20,
       runSpacing: 20,
       children: const [
-        // This is now a const list, which improves performance.
         SkillCard(name: 'Flutter', icon: FontAwesomeIcons.mobileScreen),
         SkillCard(name: 'Python', icon: FontAwesomeIcons.python),
         SkillCard(name: 'Linux', icon: FontAwesomeIcons.linux),
@@ -427,7 +491,7 @@ class FooterSection extends StatelessWidget {
         const SizedBox(height: 40),
         OutlinedButton(
           onPressed: () {
-            _launchURL(context, 'assets/Mohammad-Parsa-Malek-Resume.pdf');
+            _launchURL(context, 'assets/assets/Mohammad-Parsa-Malek-Resume.pdf');
           },
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.secondary,
@@ -440,9 +504,20 @@ class FooterSection extends StatelessWidget {
         ),
         const SizedBox(height: 40),
         ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const GamesPage()));
+          // FIX: Correctly handle deferred loading here.
+          onPressed: () async {
+            // This shows a loading indicator while the 'games' code is downloaded.
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Loading games...'),
+              backgroundColor: AppColors.primary,
+            ));
+            // This is the correct way to load a deferred library.
+            await games.loadLibrary();
+            if (context.mounted) {
+              // Once loaded, we can navigate to the page.
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => games.GamesPage()));
+            }
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.cardColor,
@@ -697,11 +772,8 @@ class ProjectTile extends StatelessWidget {
 void _launchURL(BuildContext context, String url) async {
   final Uri uri = Uri.parse(url);
   try {
-    // The canLaunch check is unreliable for web assets, so we launch directly.
-    // The catch block will handle failures.
     await launchUrl(uri, webOnlyWindowName: '_self');
   } catch (e) {
-    // A check to prevent showing a SnackBar if the widget is no longer in the tree.
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -768,7 +840,8 @@ class _AnimatedAuroraBackgroundState extends State<AnimatedAuroraBackground>
           ),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 70, sigmaY: 70),
-            child: Container(color: Colors.black.withOpacity(0.2)),
+            // FIX: Replaced deprecated withOpacity with withAlpha
+            child: Container(color: Colors.black.withAlpha(51)),
           ),
         );
       },
