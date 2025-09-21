@@ -456,7 +456,7 @@ class FooterSection extends StatelessWidget {
         ),
         const SizedBox(height: 50),
         const Text(
-          'Designed & Built by Mohammad Parsa Malek with Flutter.',
+          'Designed & Built by Mohammad Parsa Malek',
           style: TextStyle(fontSize: 12),
         ),
       ],
