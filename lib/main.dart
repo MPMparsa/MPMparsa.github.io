@@ -60,6 +60,14 @@ class _ResumePageState extends State<ResumePage> {
 
   final Map<String, bool> _sectionHasBeenVisible = {};
 
+  // OPTIMIZATION: Pre-cache the background image for faster display.
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    precacheImage(const AssetImage('assets/images/profile_background.jpg'), context);
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -206,8 +214,6 @@ class _ResumePageState extends State<ResumePage> {
   }
 }
 
-// --- NEW WIDGET: HERO IMAGE BACKGROUND ---
-// This widget creates the blurred background with a clear circle spotlight.
 class HeroImageBackground extends StatelessWidget {
   const HeroImageBackground({super.key});
 
@@ -216,31 +222,22 @@ class HeroImageBackground extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // 1. The full background image
+        // FIX: Corrected asset path
         Image.asset(
-          'assets/images/profile_background.jpg',
+          'assets/assets/images/profile_background.jpg',
           fit: BoxFit.cover,
         ),
-
-        // 2. A dark overlay to make text more readable
-        // FIX: Replaced deprecated .withOpacity() with .withAlpha()
         Container(
           color: AppColors.background.withAlpha((0.6 * 255).round()),
         ),
-
-        // 3. The blurred layer
         ClipRect(
-          // ClipRect is important for BackdropFilter to work efficiently
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-            // FIX: Replaced deprecated .withOpacity() with .withAlpha()
             child: Container(
               color: Colors.black.withAlpha((0.1 * 255).round()),
             ),
           ),
         ),
-
-        // 4. The "spotlight" effect using a Radial Gradient
         Container(
           decoration: BoxDecoration(
             gradient: RadialGradient(
@@ -248,7 +245,6 @@ class HeroImageBackground extends StatelessWidget {
               radius: 0.3,
               colors: [
                 Colors.transparent,
-                // FIX: Replaced deprecated .withOpacity() with .withAlpha()
                 Colors.black.withAlpha((0.8 * 255).round()),
               ],
               stops: const [0.5, 1.0],
@@ -260,7 +256,7 @@ class HeroImageBackground extends StatelessWidget {
   }
 }
 
-// --- SECTIONS (No changes needed below this point) ---
+// --- SECTIONS ---
 
 class HeroSection extends StatelessWidget {
   const HeroSection({super.key});
@@ -406,7 +402,7 @@ class ExperienceSection extends StatelessWidget {
         ExperienceTile(
           isLast: true,
           company: 'Sharif university of technology',
-          title: 'Bachelor: Biomedical Engineering- Bioelectric',
+          title: 'Bachelor: Electrical Engineering- Bioelectric',
           period: '2022 - Present',
           description:
           'Pursuing a rigorous curriculum focused on the intersection of electrical engineering and biological systems, with projects in signal processing and embedded systems.',
@@ -536,7 +532,8 @@ class FooterSection extends StatelessWidget {
         const SizedBox(height: 40),
         OutlinedButton(
           onPressed: () {
-            _launchURL(context, 'assets/Mohammad-Parsa-Malek-Resume.pdf');
+            // FIX: Corrected asset path for the PDF
+            _launchURL(context, 'assets/assets/Mohammad-Parsa-Malek-Resume.pdf');
           },
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.secondary,
