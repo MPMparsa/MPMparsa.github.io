@@ -25,6 +25,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/images/ # Add this line to include the whole folder
+    - assets/fonts/
+    - assets/icon/
     - assets/Mohammad-Parsa-Malek-Resume.pdf
   fonts:
     - family: Parisienne

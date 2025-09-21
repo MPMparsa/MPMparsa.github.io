@@ -3,10 +3,12 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 
-const RESOURCES = {"assets/AssetManifest.bin": "edc6d7150338811d33499eeb1468b400",
-"assets/AssetManifest.bin.json": "f6eed03134b7628cf624e33a1edb8609",
-"assets/AssetManifest.json": "944bb07d669bd29c338bda3b3d7592e1",
+const RESOURCES = {"assets/AssetManifest.bin": "3a25d84147b7248ab1929d36f04fa46d",
+"assets/AssetManifest.bin.json": "3cdc1cf8e0476fbb0891f550d7355978",
+"assets/AssetManifest.json": "66779c2f4e0c64bbcc55e697f26efcfb",
 "assets/assets/fonts/Parisienne-Regular.ttf": "2ef637e29853f2e76ee4393e39dd6fdc",
+"assets/assets/icon/MPM.png": "368f5544d0118cdbbb96fe01dacc29af",
+"assets/assets/images/profile_background.jpg": "feac927a35b2e8e969301566f3714d09",
 "assets/assets/Mohammad-Parsa-Malek-Resume.pdf": "da35b51e31484c3771767bf461baee2f",
 "assets/FontManifest.json": "ddd312124f683246e89cace2969b4d84",
 "assets/fonts/MaterialIcons-Regular.otf": "1d82e14f9fa711be560627294de45719",
@@ -29,15 +31,15 @@ const RESOURCES = {"assets/AssetManifest.bin": "edc6d7150338811d33499eeb1468b400
 "canvaskit/skwasm_heavy.wasm": "8034ad26ba2485dab2fd49bdd786837b",
 "favicon.png": "f1fcc696639c712785660da2bedae738",
 "flutter.js": "888483df48293866f9f41d3d9274a779",
-"flutter_bootstrap.js": "a3758c798196a4d3f455af663ccb4002",
+"flutter_bootstrap.js": "d18997a04804922129a8418c2ae7dd33",
 "icons/Icon-192.png": "a6900c558135bfe423904459b59af26a",
 "icons/Icon-512.png": "38125643db0c2528d631a10cb8c36706",
 "icons/Icon-maskable-192.png": "a6900c558135bfe423904459b59af26a",
 "icons/Icon-maskable-512.png": "38125643db0c2528d631a10cb8c36706",
-"index.html": "a8355923a552e0eb481f657b5b9bb950",
-"/": "a8355923a552e0eb481f657b5b9bb950",
-"main.dart.js": "5fcad5bb4d6c1cbe851eef0bf403fc99",
-"main.dart.js_1.part.js": "11b75488a44becd42e95dcc23554ed7f",
+"index.html": "2f49b1cb55f8f26e0daafdd32660f8c0",
+"/": "2f49b1cb55f8f26e0daafdd32660f8c0",
+"main.dart.js": "dad552382ce1640108e2fdbfaecb7c08",
+"main.dart.js_1.part.js": "a9d964e2ee4ffd4dfa7a29953f1b8f86",
 "manifest.json": "60b7eac117b64b392d39e2e698c02a4b",
 "version.json": "9b818ca9511483c901bed1545384376c"};
 // The application shell files that are downloaded before a service worker can

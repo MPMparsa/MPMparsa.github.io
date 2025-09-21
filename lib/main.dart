@@ -7,8 +7,6 @@ import 'package:timeline_tile/timeline_tile.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
-// OPTIMIZATION: Deferred loading for the games page.
-// This tells Flutter not to load 'games.dart' until we specifically ask for it.
 import 'games.dart' deferred as games;
 
 // --- App Theme and Colors ---
@@ -60,7 +58,6 @@ class _ResumePageState extends State<ResumePage> {
   final contactKey = GlobalKey();
   late ScrollController _scrollController;
 
-  // Map to track which sections have been made visible to trigger animations once.
   final Map<String, bool> _sectionHasBeenVisible = {};
 
   @override
@@ -111,7 +108,7 @@ class _ResumePageState extends State<ResumePage> {
       ),
       body: Stack(
         children: [
-          const AnimatedAuroraBackground(),
+          const HeroImageBackground(),
           Center(
             child: SingleChildScrollView(
               controller: _scrollController,
@@ -124,7 +121,6 @@ class _ResumePageState extends State<ResumePage> {
                   children: [
                     const HeroSection(),
                     const SizedBox(height: 100),
-                    // Sections are now wrapped in a lazy-loading widget.
                     _buildLazySection(
                         key: aboutKey,
                         sectionKey: 'about',
@@ -164,14 +160,12 @@ class _ResumePageState extends State<ResumePage> {
     );
   }
 
-  // Widget to handle lazy loading of sections
   Widget _buildLazySection({
     required GlobalKey key,
     required String sectionKey,
     required String title,
     required Widget child,
   }) {
-    // If the section has already been visible, just show it.
     if (_sectionHasBeenVisible[sectionKey] == true) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,12 +176,10 @@ class _ResumePageState extends State<ResumePage> {
       );
     }
 
-    // Otherwise, use VisibilityDetector to build it when it comes into view.
     return VisibilityDetector(
       key: Key(sectionKey),
       onVisibilityChanged: (info) {
         if (info.visibleFraction > 0.1) {
-          // Check if the widget is still in the tree before calling setState
           if (mounted) {
             setState(() {
               _sectionHasBeenVisible[sectionKey] = true;
@@ -205,7 +197,7 @@ class _ResumePageState extends State<ResumePage> {
       )
           : SizedBox(
         key: key,
-        height: 300, // Placeholder with a height
+        height: 300,
         child: const Center(
             child:
             CircularProgressIndicator(color: AppColors.secondary)),
@@ -214,7 +206,61 @@ class _ResumePageState extends State<ResumePage> {
   }
 }
 
-// --- SECTIONS ---
+// --- NEW WIDGET: HERO IMAGE BACKGROUND ---
+// This widget creates the blurred background with a clear circle spotlight.
+class HeroImageBackground extends StatelessWidget {
+  const HeroImageBackground({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // 1. The full background image
+        Image.asset(
+          'assets/images/profile_background.jpg',
+          fit: BoxFit.cover,
+        ),
+
+        // 2. A dark overlay to make text more readable
+        // FIX: Replaced deprecated .withOpacity() with .withAlpha()
+        Container(
+          color: AppColors.background.withAlpha((0.6 * 255).round()),
+        ),
+
+        // 3. The blurred layer
+        ClipRect(
+          // ClipRect is important for BackdropFilter to work efficiently
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            // FIX: Replaced deprecated .withOpacity() with .withAlpha()
+            child: Container(
+              color: Colors.black.withAlpha((0.1 * 255).round()),
+            ),
+          ),
+        ),
+
+        // 4. The "spotlight" effect using a Radial Gradient
+        Container(
+          decoration: BoxDecoration(
+            gradient: RadialGradient(
+              center: const Alignment(0.5, 0.4),
+              radius: 0.3,
+              colors: [
+                Colors.transparent,
+                // FIX: Replaced deprecated .withOpacity() with .withAlpha()
+                Colors.black.withAlpha((0.8 * 255).round()),
+              ],
+              stops: const [0.5, 1.0],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// --- SECTIONS (No changes needed below this point) ---
 
 class HeroSection extends StatelessWidget {
   const HeroSection({super.key});
@@ -402,7 +448,6 @@ class SkillsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Note: Can't be const because of the .animate() call on the list
     return Wrap(
       spacing: 20,
       runSpacing: 20,
@@ -491,7 +536,7 @@ class FooterSection extends StatelessWidget {
         const SizedBox(height: 40),
         OutlinedButton(
           onPressed: () {
-            _launchURL(context, 'assets/assets/Mohammad-Parsa-Malek-Resume.pdf');
+            _launchURL(context, 'assets/Mohammad-Parsa-Malek-Resume.pdf');
           },
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.secondary,
@@ -504,17 +549,13 @@ class FooterSection extends StatelessWidget {
         ),
         const SizedBox(height: 40),
         ElevatedButton(
-          // FIX: Correctly handle deferred loading here.
           onPressed: () async {
-            // This shows a loading indicator while the 'games' code is downloaded.
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text('Loading games...'),
               backgroundColor: AppColors.primary,
             ));
-            // This is the correct way to load a deferred library.
             await games.loadLibrary();
             if (context.mounted) {
-              // Once loaded, we can navigate to the page.
               Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => games.GamesPage()));
             }
@@ -786,7 +827,6 @@ void _launchURL(BuildContext context, String url) async {
   }
 }
 
-// --- ANIMATED BACKGROUND WIDGET ---
 class AnimatedAuroraBackground extends StatefulWidget {
   const AnimatedAuroraBackground({super.key});
 
@@ -840,7 +880,6 @@ class _AnimatedAuroraBackgroundState extends State<AnimatedAuroraBackground>
           ),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 70, sigmaY: 70),
-            // FIX: Replaced deprecated withOpacity with withAlpha
             child: Container(color: Colors.black.withAlpha(51)),
           ),
         );
