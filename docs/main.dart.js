@@ -66134,7 +66134,7 @@ q.Tv(s,B.DW,s,s,r,s,s,s,t.l7)
 return A.ahs(B.ck,A.HD(A.ke(q,s,A.bh(8e5,0,0)),0.3,A.bh(6e5,0,0)),20,20)}}
 A.Ei.prototype={
 J(a){var s=null,r=t.p
-return A.HD(A.ke(A.jX(A.fo(A.c([B.Qp,B.wn,B.Qh,B.Kw,A.nn(A.c([A.agl(s,s,B.Ch,30,s,new A.Uy(a),s,s,"LinkedIn"),B.wm,A.agl(s,s,B.Ce,30,s,new A.Uz(a),s,s,"Telegram")],r),B.a9,B.bK,B.W),B.j9,new A.FE(new A.UA(a),s,s,s,A.avj(s,s,s,s,s,s,s,s,s,B.U,s,s,B.Be,s,new A.ce(A.tf(8),B.q),B.xE,s,s,s,s),s,s,!1,s,!0,s,B.Qc,s),B.j9,A.ak7(B.Qi,new A.UB(a),A.ak8(s,s,B.aA,s,s,s,s,s,s,B.U,s,s,B.l5,s,new A.ce(A.tf(8),B.q),s,s,s,s,s)),B.Ky,B.Qj],r),B.a9,B.a_,B.W),s),s,A.bh(8e5,0,0)),0.3,A.bh(6e5,0,0))}}
+return A.HD(A.ke(A.jX(A.fo(A.c([B.Qp,B.wn,B.Qi,B.Kw,A.nn(A.c([A.agl(s,s,B.Ch,30,s,new A.Uy(a),s,s,"LinkedIn"),B.wm,A.agl(s,s,B.Ce,30,s,new A.Uz(a),s,s,"Telegram")],r),B.a9,B.bK,B.W),B.j9,new A.FE(new A.UA(a),s,s,s,A.avj(s,s,s,s,s,s,s,s,s,B.U,s,s,B.Be,s,new A.ce(A.tf(8),B.q),B.xE,s,s,s,s),s,s,!1,s,!0,s,B.Qc,s),B.j9,A.ak7(B.Qj,new A.UB(a),A.ak8(s,s,B.aA,s,s,s,s,s,s,B.U,s,s,B.l5,s,new A.ce(A.tf(8),B.q),s,s,s,s,s)),B.Ky,B.Qh],r),B.a9,B.a_,B.W),s),s,A.bh(8e5,0,0)),0.3,A.bh(6e5,0,0))}}
 A.Uy.prototype={
 $0(){return A.lG(this.a,"https://www.linkedin.com/in/mohamadparsa-malek-0214322a2")},
 $S:0}
@@ -71468,11 +71468,11 @@ B.Q7=new A.c5("Mohammad Parsa Malek",null,B.Ps,null,null)
 B.Qc=new A.c5("Download Full CV",null,null,null,null)
 B.Qd=new A.c5("About",null,null,null,null)
 B.Qf=new A.c5("Experience",null,null,null,null)
-B.OA=new A.k(!0,B.bH,null,null,null,null,16,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.Qh=new A.c5("Feel free to reach out for collaborations or just a friendly hello!",null,B.OA,B.dZ,null)
-B.Qi=new A.c5("Boring...?, try this",null,B.jf,null,null)
 B.PG=new A.k(!0,null,null,null,null,null,12,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.Qj=new A.c5("Designed & Built by Mohammad Parsa Malek.",null,B.PG,null,null)
+B.Qh=new A.c5("Designed & Built by Mohammad Parsa Malek",null,B.PG,null,null)
+B.OA=new A.k(!0,B.bH,null,null,null,null,16,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
+B.Qi=new A.c5("Feel free to reach out for collaborations or just a friendly hello!",null,B.OA,B.dZ,null)
+B.Qj=new A.c5("Boring...?, try this",null,B.jf,null,null)
 B.Aa=new A.y(1,0.8862745098039215,0.9098039215686274,0.9411764705882353,B.f)
 B.Pe=new A.k(!0,B.Aa,null,null,null,null,16,B.M,null,null,null,null,1.6,null,null,null,null,null,null,null,null,null,null,null,null,null)
 B.Qk=new A.c5("A dedicated and innovative bioelectric engineer and AI expert with a passion for developing elegant software solutions. Proficient in deploying ML models and bridging the gap between hardware and software with embedded systems and Flutter.",null,B.Pe,null,null)
