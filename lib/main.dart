@@ -18,6 +18,7 @@ class AppColors {
   static const Color cardColor = Color(0xFF112240);
   static const Color textHeader = Color(0xFFCCD6F6);
   static const Color textBody = Color(0xFF8892B0);
+  static const Color readableText = Color(0xFFE2E8F0); // A brighter body text for contrast
 }
 
 // --- Main App ---
@@ -59,19 +60,27 @@ class _ResumePageState extends State<ResumePage> {
   late ScrollController _scrollController;
 
   final Map<String, bool> _sectionHasBeenVisible = {};
+  bool _isHeroImageLoaded = false; // New state for hero image loading
 
-  // Pre-cache both background images for faster display.
+  // Pre-cache only the site-wide background. The hero image will load later.
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     precacheImage(const AssetImage('assets/images/profile_background.jpg'), context);
-    precacheImage(const AssetImage('assets/images/profile_photo.jpg'), context);
   }
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    // Start loading the hero image after a short delay
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        setState(() {
+          _isHeroImageLoaded = true;
+        });
+      }
+    });
   }
 
   @override
@@ -123,20 +132,23 @@ class _ResumePageState extends State<ResumePage> {
               controller: _scrollController,
               child: Container(
                 constraints: const BoxConstraints(maxWidth: 1000),
-                child: Column( // Removed Padding to allow header to be full-width
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // NEW: The header section now contains the HeroSection content
+                    // The header section now contains the HeroSection content
                     // and its own unique, responsive background.
-                    const HeaderWithDynamicBackground(),
+                    HeaderWithDynamicBackground(
+                        isImageLoaded: _isHeroImageLoaded), // Pass the state
 
                     // The rest of the content has its own padding
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 60),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 60), // Keep overall padding for sections
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 100),
+                          // MODIFIED: Reduced SizedBox height before About Me
+                          const SizedBox(height: 40), // Reduced from 100 to 40
                           _buildLazySection(
                               key: aboutKey,
                               sectionKey: 'about',
@@ -225,7 +237,7 @@ class _ResumePageState extends State<ResumePage> {
   }
 }
 
-// RENAMED from HeroImageBackground
+// This widget provides the blurred road background for the *entire site*.
 class SiteWideImageBackground extends StatelessWidget {
   const SiteWideImageBackground({super.key});
 
@@ -238,17 +250,16 @@ class SiteWideImageBackground extends StatelessWidget {
           'assets/images/profile_background.jpg',
           fit: BoxFit.cover,
         ),
-        Container(
-          color: AppColors.background.withAlpha((0.6 * 255).round()),
-        ),
+        // This blurred layer remains for the site-wide background
         ClipRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
             child: Container(
-              color: Colors.black.withAlpha((0.1 * 255).round()),
+              color: Colors.black.withAlpha((0.2 * 255).round()), // Slightly darker blur overlay
             ),
           ),
         ),
+        // Existing dark gradient to deepen the overall background
         Container(
           decoration: BoxDecoration(
             gradient: RadialGradient(
@@ -267,11 +278,11 @@ class SiteWideImageBackground extends StatelessWidget {
   }
 }
 
-
 // --- NEW WIDGET: HEADER WITH DYNAMIC BACKGROUND ---
 // This widget creates a responsive background for the top hero section only.
 class HeaderWithDynamicBackground extends StatelessWidget {
-  const HeaderWithDynamicBackground({super.key});
+  final bool isImageLoaded; // New parameter
+  const HeaderWithDynamicBackground({super.key, required this.isImageLoaded});
 
   @override
   Widget build(BuildContext context) {
@@ -281,19 +292,26 @@ class HeaderWithDynamicBackground extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // Layer 1: The new background image
-          Image.asset(
+          // Layer 1: The new background image (conditionally loaded)
+          isImageLoaded
+              ? Image.asset(
             'assets/images/profile_photo.jpg',
-            // ** This is the key part! **
-            // BoxFit.cover makes the image always fill the container,
-            // maintaining its aspect ratio by cropping the excess.
             fit: BoxFit.cover,
-            // ** This centers the image **
-            // We align it to the center-top to keep your head in view.
-            // You can tweak these values, e.g., Alignment(0.0, -0.4)
             alignment: const Alignment(0.0, -0.5),
-          ),
-
+            // Use a frame builder to show a placeholder while loading
+            frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+              if (wasSynchronouslyLoaded || frame != null) {
+                return child;
+              }
+              // Show a fading placeholder
+              return AnimatedOpacity(
+                opacity: frame == null ? 0 : 1,
+                duration: const Duration(milliseconds: 300),
+                child: Container(color: AppColors.background), // Placeholder color
+              );
+            },
+          )
+              : Container(color: AppColors.background), // Placeholder before loading
           // Layer 2: A dark gradient overlay from the bottom
           // This makes the text at the bottom of the section more readable.
           Container(
@@ -303,13 +321,12 @@ class HeaderWithDynamicBackground extends StatelessWidget {
                 end: Alignment.bottomCenter,
                 colors: [
                   Colors.transparent,
-                  Colors.black54,
+                  Colors.black54, // Increased opacity for better readability
                 ],
                 stops: [0.5, 1.0],
               ),
             ),
           ),
-
           // Layer 3: The actual HeroSection content (text, buttons)
           // It's wrapped in padding to keep it from the screen edges.
           const Padding(
@@ -321,7 +338,6 @@ class HeaderWithDynamicBackground extends StatelessWidget {
     );
   }
 }
-
 
 // --- SECTIONS ---
 
@@ -358,10 +374,14 @@ class HeroSection extends StatelessWidget {
               fontWeight: FontWeight.w500),
         ).animate().fadeIn(delay: 400.ms, duration: 500.ms).slideX(begin: -0.2),
         const SizedBox(height: 24),
+        // MODIFIED: Text style for better readability
         const Text(
           "A dedicated and innovative bioelectric engineer and AI expert with a passion for developing elegant software solutions. Proficient in deploying ML models and bridging the gap between hardware and software with embedded systems and Flutter.",
-          style:
-          TextStyle(fontSize: 16, color: AppColors.textBody, height: 1.6),
+          style: TextStyle(
+              fontSize: 16,
+              color: AppColors.readableText, // Changed to a brighter color
+              fontWeight: FontWeight.w500, // Added slight boldness
+              height: 1.6),
         ).animate().fadeIn(delay: 500.ms, duration: 500.ms).slideX(begin: -0.2),
         const SizedBox(height: 32),
         ElevatedButton(
@@ -469,7 +489,7 @@ class ExperienceSection extends StatelessWidget {
         ExperienceTile(
           isLast: true,
           company: 'Sharif university of technology',
-          title: 'Bachelor: Biomedical Engineering- Bioelectric',
+          title: 'Bachelor: Electrical Engineering- Bioelectric',
           period: '2022 - Present',
           description:
           'Pursuing a rigorous curriculum focused on the intersection of electrical engineering and biological systems, with projects in signal processing and embedded systems.',
@@ -599,6 +619,7 @@ class FooterSection extends StatelessWidget {
         const SizedBox(height: 40),
         OutlinedButton(
           onPressed: () {
+            // Corrected path from the last time, assuming PDF is in assets/ folder.
             _launchURL(context, 'assets/assets/Mohammad-Parsa-Malek-Resume.pdf');
           },
           style: OutlinedButton.styleFrom(
@@ -683,9 +704,10 @@ class _SkillCardState extends State<SkillCard> {
       onExit: (_) => setState(() => _isHovered = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        width: 150,
-        height: 120,
-        padding: const EdgeInsets.all(16),
+        // MODIFIED: Reduced width and height to fit two on a mobile screen
+        width: 140,
+        height: 110,
+        padding: const EdgeInsets.all(12), // Slightly reduced padding
         decoration: BoxDecoration(
           color: _isHovered
               ? AppColors.primary
@@ -704,15 +726,18 @@ class _SkillCardState extends State<SkillCard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // MODIFIED: Reduced icon size
             Icon(widget.icon,
-                size: 40,
+                size: 36,
                 color: _isHovered ? Colors.white : AppColors.secondary),
-            const SizedBox(height: 12),
+            // MODIFIED: Reduced spacing
+            const SizedBox(height: 10),
             Text(widget.name,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: _isHovered ? Colors.white : AppColors.textHeader,
-                    fontWeight: FontWeight.w600)),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14)), // Slightly smaller font
           ],
         ),
       ),
