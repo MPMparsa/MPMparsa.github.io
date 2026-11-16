@@ -1,15 +1,16 @@
 import 'dart:ui';
-import 'package:flutter/gestures.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:timeline_tile/timeline_tile.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:visibility_detector/visibility_detector.dart';
+import 'package:timeline_tile/timeline_tile.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'games.dart' deferred as games;
 
-// --- App Theme and Colors ---
+// -----------------------------------------------------------------------------
+// Portfolio theme
+// -----------------------------------------------------------------------------
 class AppColors {
   static const Color background = Color(0xFF0A192F);
   static const Color primary = Color(0xFF003B8E);
@@ -17,12 +18,13 @@ class AppColors {
   static const Color backgroundEnd = Color(0xFF112240);
   static const Color cardColor = Color(0xFF112240);
   static const Color textHeader = Color(0xFFCCD6F6);
-  static const Color textBody = Color(0xFF8892B0);
-  static const Color readableText = Color(0xFFE2E8F0); // A brighter body text for contrast
+  static const Color textBody = Color(0xFFB0BAD2);
+  static const Color readableText = Color(0xFFE2E8F0);
 }
 
-// --- Main App ---
-void main() => runApp(const PortfolioApp());
+void main() {
+  runApp(const PortfolioApp());
+}
 
 class PortfolioApp extends StatelessWidget {
   const PortfolioApp({super.key});
@@ -30,13 +32,24 @@ class PortfolioApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Mohammad Parsa Malek | Bioelectric Engineer',
       debugShowCheckedModeBanner: false,
-      title: 'Mohammad Parsa Malek Portfolio',
       theme: ThemeData(
+        useMaterial3: true,
         scaffoldBackgroundColor: AppColors.background,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColors.secondary,
+          brightness: Brightness.dark,
+          surface: AppColors.cardColor,
+        ),
         textTheme: Theme.of(context).textTheme.apply(
           bodyColor: AppColors.textBody,
           displayColor: AppColors.textHeader,
+        ),
+        appBarTheme: const AppBarTheme(
+          elevation: 0,
+          backgroundColor: AppColors.background,
+          foregroundColor: AppColors.textHeader,
         ),
       ),
       home: const ResumePage(),
@@ -44,6 +57,9 @@ class PortfolioApp extends StatelessWidget {
   }
 }
 
+// -----------------------------------------------------------------------------
+// Main page and navigation
+// -----------------------------------------------------------------------------
 class ResumePage extends StatefulWidget {
   const ResumePage({super.key});
 
@@ -52,33 +68,24 @@ class ResumePage extends StatefulWidget {
 }
 
 class _ResumePageState extends State<ResumePage> {
-  final aboutKey = GlobalKey();
-  final experienceKey = GlobalKey();
-  final skillsKey = GlobalKey();
-  final projectsKey = GlobalKey();
-  final contactKey = GlobalKey();
-  late ScrollController _scrollController;
+  final ScrollController _scrollController = ScrollController();
 
-  final Map<String, bool> _sectionHasBeenVisible = {};
-  bool _isHeroImageLoaded = false; // New state for hero image loading
+  final GlobalKey _aboutKey = GlobalKey();
+  final GlobalKey _experienceKey = GlobalKey();
+  final GlobalKey _educationKey = GlobalKey();
+  final GlobalKey _projectsKey = GlobalKey();
+  final GlobalKey _skillsKey = GlobalKey();
+  final GlobalKey _certificatesKey = GlobalKey();
+  final GlobalKey _contactKey = GlobalKey();
 
-  // Pre-cache only the site-wide background. The hero image will load later.
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    precacheImage(const AssetImage('assets/images/profile_background.jpg'), context);
-  }
+  bool _heroImageLoaded = false;
 
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
-    // Start loading the hero image after a short delay
-    Future.delayed(const Duration(milliseconds: 500), () {
+    Future<void>.delayed(const Duration(milliseconds: 400), () {
       if (mounted) {
-        setState(() {
-          _isHeroImageLoaded = true;
-        });
+        setState(() => _heroImageLoaded = true);
       }
     });
   }
@@ -90,94 +97,162 @@ class _ResumePageState extends State<ResumePage> {
   }
 
   void _scrollTo(GlobalKey key) {
-    Scrollable.ensureVisible(key.currentContext!,
-        duration: const Duration(milliseconds: 600), curve: Curves.easeInOut);
+    final BuildContext? targetContext = key.currentContext;
+    if (targetContext == null) return;
+
+    Scrollable.ensureVisible(
+      targetContext,
+      duration: const Duration(milliseconds: 650),
+      curve: Curves.easeInOutCubic,
+      alignment: 0.04,
+    );
+  }
+
+  void _navigateTo(String destination) {
+    switch (destination) {
+      case 'about':
+        _scrollTo(_aboutKey);
+        break;
+      case 'experience':
+        _scrollTo(_experienceKey);
+        break;
+      case 'education':
+        _scrollTo(_educationKey);
+        break;
+      case 'projects':
+        _scrollTo(_projectsKey);
+        break;
+      case 'skills':
+        _scrollTo(_skillsKey);
+        break;
+      case 'certificates':
+        _scrollTo(_certificatesKey);
+        break;
+      case 'contact':
+        _scrollTo(_contactKey);
+        break;
+    }
+  }
+
+  Widget _navigationButton(String label, String destination) {
+    return TextButton(
+      onPressed: () => _navigateTo(destination),
+      child: Text(label),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final bool compactNavigation = MediaQuery.of(context).size.width < 980;
+
     return Scaffold(
+      extendBodyBehindAppBar: false,
       appBar: AppBar(
-        backgroundColor: AppColors.background.withAlpha(220),
-        title: const Text('Mohammad Parsa Malek',
-            style: TextStyle(
-                fontFamily: 'Parisienne',
-                fontWeight: FontWeight.bold,
-                color: AppColors.textHeader,
-                fontSize: 26)),
-        actions: [
-          TextButton(
-              onPressed: () => _scrollTo(aboutKey), child: const Text('About')),
-          TextButton(
-              onPressed: () => _scrollTo(experienceKey),
-              child: const Text('Experience')),
-          TextButton(
-              onPressed: () => _scrollTo(projectsKey),
-              child: const Text('Projects')),
-          TextButton(
-              onPressed: () => _scrollTo(skillsKey),
-              child: const Text('Skills')),
-          TextButton(
-              onPressed: () => _scrollTo(contactKey),
-              child: const Text('Contact')),
-          const SizedBox(width: 20),
+        backgroundColor: AppColors.background.withAlpha(238),
+        title: const Text(
+          'Mohammad Parsa Malek',
+          style: TextStyle(
+            fontFamily: 'Parisienne',
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textHeader,
+          ),
+        ),
+        actions: compactNavigation
+            ? [
+          PopupMenuButton<String>(
+            tooltip: 'Navigate to section',
+            icon: const Icon(Icons.menu, color: AppColors.secondary),
+            onSelected: _navigateTo,
+            itemBuilder: (context) => const [
+              PopupMenuItem(value: 'about', child: Text('About')),
+              PopupMenuItem(
+                  value: 'experience', child: Text('Experience')),
+              PopupMenuItem(value: 'education', child: Text('Education')),
+              PopupMenuItem(value: 'projects', child: Text('Projects')),
+              PopupMenuItem(value: 'skills', child: Text('Skills')),
+              PopupMenuItem(
+                  value: 'certificates', child: Text('Certificates')),
+              PopupMenuItem(value: 'contact', child: Text('Contact')),
+            ],
+          ),
+          const SizedBox(width: 12),
+        ]
+            : [
+          _navigationButton('About', 'about'),
+          _navigationButton('Experience', 'experience'),
+          _navigationButton('Education', 'education'),
+          _navigationButton('Projects', 'projects'),
+          _navigationButton('Skills', 'skills'),
+          _navigationButton('Certificates', 'certificates'),
+          _navigationButton('Contact', 'contact'),
+          const SizedBox(width: 12),
         ],
       ),
       body: Stack(
         children: [
-          // This is now the SITE-WIDE background. It's always visible.
           const SiteWideImageBackground(),
           Center(
             child: SingleChildScrollView(
               controller: _scrollController,
-              child: Container(
-                constraints: const BoxConstraints(maxWidth: 1000),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1100),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // The header section now contains the HeroSection content
-                    // and its own unique, responsive background.
                     HeaderWithDynamicBackground(
-                        isImageLoaded: _isHeroImageLoaded), // Pass the state
-
-                    // The rest of the content has its own padding
+                      isImageLoaded: _heroImageLoaded,
+                    ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 40, vertical: 60), // Keep overall padding for sections
+                      padding: EdgeInsets.symmetric(
+                        horizontal:
+                        MediaQuery.of(context).size.width < 600 ? 20 : 40,
+                        vertical: 58,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // MODIFIED: Reduced SizedBox height before About Me
-                          const SizedBox(height: 40), // Reduced from 100 to 40
-                          _buildLazySection(
-                              key: aboutKey,
-                              sectionKey: 'about',
-                              title: 'About Me',
-                              child: const AboutSection()),
-                          const SizedBox(height: 80),
-                          _buildLazySection(
-                              key: experienceKey,
-                              sectionKey: 'experience',
-                              title: 'Experience & Education',
-                              child: const ExperienceSection()),
-                          const SizedBox(height: 80),
-                          _buildLazySection(
-                              key: projectsKey,
-                              sectionKey: 'projects',
-                              title: 'Projects & Rewards',
-                              child: const ProjectsSection()),
-                          const SizedBox(height: 80),
-                          _buildLazySection(
-                              key: skillsKey,
-                              sectionKey: 'skills',
-                              title: 'Technical Skills',
-                              child: const SkillsSection()),
-                          const SizedBox(height: 80),
-                          _buildLazySection(
-                              key: contactKey,
-                              sectionKey: 'contact',
-                              title: '', // Footer has its own title
-                              child: const FooterSection()),
+                          _section(
+                            key: _aboutKey,
+                            title: 'About Me',
+                            child: const AboutSection(),
+                          ),
+                          const SizedBox(height: 76),
+                          _section(
+                            key: _experienceKey,
+                            title: 'Work Experience',
+                            child: const ExperienceSection(),
+                          ),
+                          const SizedBox(height: 76),
+                          _section(
+                            key: _educationKey,
+                            title: 'Education',
+                            child: const EducationSection(),
+                          ),
+                          const SizedBox(height: 76),
+                          _section(
+                            key: _projectsKey,
+                            title: 'Selected Projects',
+                            child: const ProjectsSection(),
+                          ),
+                          const SizedBox(height: 76),
+                          _section(
+                            key: _skillsKey,
+                            title: 'Technical Skills',
+                            child: const SkillsSection(),
+                          ),
+                          const SizedBox(height: 76),
+                          _section(
+                            key: _certificatesKey,
+                            title: 'Certificates',
+                            child: const CertificatesSection(),
+                          ),
+                          const SizedBox(height: 76),
+                          _section(
+                            key: _contactKey,
+                            title: '',
+                            child: const FooterSection(),
+                          ),
                         ],
                       ),
                     ),
@@ -191,53 +266,25 @@ class _ResumePageState extends State<ResumePage> {
     );
   }
 
-  Widget _buildLazySection({
+  Widget _section({
     required GlobalKey key,
-    required String sectionKey,
     required String title,
     required Widget child,
   }) {
-    if (_sectionHasBeenVisible[sectionKey] == true) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (title.isNotEmpty) SectionTitle(key: key, title: title),
-          child,
-        ],
-      );
-    }
-
-    return VisibilityDetector(
-      key: Key(sectionKey),
-      onVisibilityChanged: (info) {
-        if (info.visibleFraction > 0.1) {
-          if (mounted) {
-            setState(() {
-              _sectionHasBeenVisible[sectionKey] = true;
-            });
-          }
-        }
-      },
-      child: _sectionHasBeenVisible[sectionKey] == true
-          ? Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (title.isNotEmpty) SectionTitle(key: key, title: title),
-          child,
-        ],
-      )
-          : SizedBox(
-        key: key,
-        height: 300,
-        child: const Center(
-            child:
-            CircularProgressIndicator(color: AppColors.secondary)),
-      ),
+    return Column(
+      key: key,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (title.isNotEmpty) SectionTitle(title: title),
+        child,
+      ],
     );
   }
 }
 
-// This widget provides the blurred road background for the *entire site*.
+// -----------------------------------------------------------------------------
+// Background and hero
+// -----------------------------------------------------------------------------
 class SiteWideImageBackground extends StatelessWidget {
   const SiteWideImageBackground({super.key});
 
@@ -249,27 +296,25 @@ class SiteWideImageBackground extends StatelessWidget {
         Image.asset(
           'assets/images/profile_background.jpg',
           fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) =>
+              Container(color: AppColors.background),
         ),
-        // This blurred layer remains for the site-wide background
         ClipRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-            child: Container(
-              color: Colors.black.withAlpha((0.2 * 255).round()), // Slightly darker blur overlay
-            ),
+            child: Container(color: Colors.black.withAlpha(90)),
           ),
         ),
-        // Existing dark gradient to deepen the overall background
         Container(
           decoration: BoxDecoration(
             gradient: RadialGradient(
-              center: const Alignment(0.5, 0.4),
-              radius: 0.3,
+              center: const Alignment(0.5, 0.35),
+              radius: 0.95,
               colors: [
                 Colors.transparent,
-                Colors.black.withAlpha((0.8 * 255).round()),
+                Colors.black.withAlpha(190),
               ],
-              stops: const [0.5, 1.0],
+              stops: const [0.25, 1.0],
             ),
           ),
         ),
@@ -278,60 +323,53 @@ class SiteWideImageBackground extends StatelessWidget {
   }
 }
 
-// --- NEW WIDGET: HEADER WITH DYNAMIC BACKGROUND ---
-// This widget creates a responsive background for the top hero section only.
 class HeaderWithDynamicBackground extends StatelessWidget {
-  final bool isImageLoaded; // New parameter
-  const HeaderWithDynamicBackground({super.key, required this.isImageLoaded});
+  final bool isImageLoaded;
+
+  const HeaderWithDynamicBackground({
+    super.key,
+    required this.isImageLoaded,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double heroHeight = screenWidth < 600
+        ? 700
+        : (screenHeight * 0.84 < 620 ? 620 : screenHeight * 0.84);
+
     return SizedBox(
-      // This height should match the height of your HeroSection content
-      height: MediaQuery.of(context).size.height * 0.8,
+      height: heroHeight,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // Layer 1: The new background image (conditionally loaded)
-          isImageLoaded
-              ? Image.asset(
-            'assets/images/profile_photo.jpg',
-            fit: BoxFit.cover,
-            alignment: const Alignment(0.0, -0.5),
-            // Use a frame builder to show a placeholder while loading
-            frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-              if (wasSynchronouslyLoaded || frame != null) {
-                return child;
-              }
-              // Show a fading placeholder
-              return AnimatedOpacity(
-                opacity: frame == null ? 0 : 1,
-                duration: const Duration(milliseconds: 300),
-                child: Container(color: AppColors.background), // Placeholder color
-              );
-            },
-          )
-              : Container(color: AppColors.background), // Placeholder before loading
-          // Layer 2: A dark gradient overlay from the bottom
-          // This makes the text at the bottom of the section more readable.
+          if (isImageLoaded)
+            Image.asset(
+              'assets/images/profile_photo.jpg',
+              fit: BoxFit.cover,
+              alignment: const Alignment(0, -0.45),
+              errorBuilder: (context, error, stackTrace) =>
+                  Container(color: AppColors.background),
+            )
+          else
+            Container(color: AppColors.background),
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  Colors.transparent,
-                  Colors.black54, // Increased opacity for better readability
-                ],
-                stops: [0.5, 1.0],
+                colors: [Colors.transparent, Colors.black87],
+                stops: [0.35, 1],
               ),
             ),
           ),
-          // Layer 3: The actual HeroSection content (text, buttons)
-          // It's wrapped in padding to keep it from the screen edges.
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 40.0),
-            child: HeroSection(),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: screenWidth < 600 ? 24 : 48,
+              vertical: 28,
+            ),
+            child: const HeroSection(),
           ),
         ],
       ),
@@ -339,123 +377,166 @@ class HeaderWithDynamicBackground extends StatelessWidget {
   }
 }
 
-// --- SECTIONS ---
-
-// IMPORTANT: HeroSection no longer needs its own SizedBox wrapper,
-// because that is now handled by HeaderWithDynamicBackground.
 class HeroSection extends StatelessWidget {
   const HeroSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final double titleSize = screenWidth < 600 ? 52 : 82;
-    final double subtitleSize = screenWidth < 600 ? 22 : 28;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double titleSize = screenWidth < 600 ? 43 : 76;
+    final double subtitleSize = screenWidth < 600 ? 19 : 27;
 
-    // No SizedBox here anymore
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Mohammad Parsa Malek',
-          style: TextStyle(
-              fontFamily: 'Parisienne',
-              fontSize: titleSize,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textHeader),
-        ).animate().fadeIn(delay: 300.ms, duration: 500.ms).slideX(begin: -0.2),
-        const SizedBox(height: 8),
-        Text(
-          'Bioelectric Engineer | AI Expert | Software&EmbeddedSystem Developer',
-          style: TextStyle(
-              fontSize: subtitleSize,
-              color: AppColors.secondary,
-              fontWeight: FontWeight.w500),
-        ).animate().fadeIn(delay: 400.ms, duration: 500.ms).slideX(begin: -0.2),
-        const SizedBox(height: 24),
-        // MODIFIED: Text style for better readability
-        const Text(
-          "A dedicated and innovative bioelectric engineer and AI expert with a passion for developing elegant software solutions. Proficient in deploying ML models and bridging the gap between hardware and software with embedded systems and Flutter.",
-          style: TextStyle(
-              fontSize: 16,
-              color: AppColors.readableText, // Changed to a brighter color
-              fontWeight: FontWeight.w500, // Added slight boldness
-              height: 1.6),
-        ).animate().fadeIn(delay: 500.ms, duration: 500.ms).slideX(begin: -0.2),
-        const SizedBox(height: 32),
-        ElevatedButton(
-          onPressed: () =>
-              _launchURL(context, 'mailto:mohamadparsamalek.30@gmail.com'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.secondary,
-            foregroundColor: AppColors.background,
-            padding:
-            const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8)),
+    return Align(
+      alignment: Alignment.bottomLeft,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 820),
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 44),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Mohammad Parsa Malek',
+                style: TextStyle(
+                  fontFamily: 'Parisienne',
+                  fontSize: titleSize,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textHeader,
+                  height: 1.12,
+                ),
+              ).animate().fadeIn(delay: 200.ms).slideX(begin: -0.12),
+              const SizedBox(height: 12),
+              Text(
+                'Bioelectric Engineer',
+                style: TextStyle(
+                  fontSize: subtitleSize,
+                  color: AppColors.secondary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ).animate().fadeIn(delay: 300.ms).slideX(begin: -0.12),
+              const SizedBox(height: 18),
+              const Text(
+                'Biomedical engineering, embedded systems, biomedical machine learning, and circuit design.',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: AppColors.readableText,
+                  fontWeight: FontWeight.w500,
+                  height: 1.65,
+                ),
+              ).animate().fadeIn(delay: 400.ms).slideX(begin: -0.12),
+              const SizedBox(height: 28),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () => _launchUrl(
+                      context,
+                      'mailto:mohamadparsamalek.30@gmail.com',
+                    ),
+                    icon: const Icon(Icons.mail_outline),
+                    label: const Text('Get in touch'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondary,
+                      foregroundColor: AppColors.background,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 17,
+                      ),
+                    ),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () => _openResume(context),
+                    icon: const Icon(Icons.picture_as_pdf_outlined),
+                    label: const Text('View CV'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.textHeader,
+                      side: const BorderSide(color: AppColors.secondary),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 17,
+                      ),
+                    ),
+                  ),
+                ],
+              ).animate().fadeIn(delay: 500.ms),
+            ],
           ),
-          child: const Text('Get In Touch',
-              style: TextStyle(fontWeight: FontWeight.bold)),
-        ).animate().fadeIn(delay: 600.ms, duration: 500.ms),
-      ],
+        ),
+      ),
     );
   }
 }
 
+// -----------------------------------------------------------------------------
+// About
+// -----------------------------------------------------------------------------
 class AboutSection extends StatelessWidget {
   const AboutSection({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppColors.cardColor.withAlpha(128),
-      child: const Padding(
-        padding: EdgeInsets.all(24.0),
-        child: Column(
+      color: AppColors.cardColor.withAlpha(225),
+      elevation: 5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: EdgeInsets.all(MediaQuery.of(context).size.width < 600 ? 18 : 28),
+        child: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Personal Information",
-                style: TextStyle(
-                    fontFamily: 'Parisienne',
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textHeader)),
-            SizedBox(height: 16),
-            InfoRow(label: "Age", value: "21 Years"),
-            InfoRow(label: "Location", value: "Tehran, Tehran"),
-            InfoRow(label: "Phone", value: "+98 990 010 0336"),
+            Text(
+              'Bioelectric engineering student with interests in biomedical applications, biomedical signal processing, embedded-system design, and machine learning on embedded devices.',
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColors.readableText,
+                height: 1.7,
+              ),
+            ),
+            SizedBox(height: 24),
+            Text(
+              'Personal Information',
+              style: TextStyle(
+                fontSize: 21,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textHeader,
+              ),
+            ),
+            SizedBox(height: 12),
+            InfoRow(label: 'Location', value: 'Narmak, Tehran, Iran'),
+            InfoRow(label: 'Born', value: '2004, Tehran'),
+            InfoRow(label: 'Phone', value: '09900100336'),
             InfoRow(
-                label: "Email", value: "mohamadparsamalek.30@gmail.com"),
-            Divider(color: AppColors.textBody, height: 32),
-            Text("Core Competencies",
-                style: TextStyle(
-                    fontFamily: 'Parisienne',
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textHeader)),
-            SizedBox(height: 16),
-            SkillBullet(text: "Embedded system designer"),
-            SkillBullet(text: "Circuit designer using Altuim designer"),
-            SkillBullet(
-                text:
-                "Machine Learning algorithm implementation in MATLAB, Python, and on embedded systems"),
-            SkillBullet(text: "Programming of ARM microcontrollers"),
+              label: 'Email',
+              value: 'mohamadparsamalek.30@gmail.com',
+            ),
+            InfoRow(label: 'Language', value: 'English — Upper Intermediate'),
+            Divider(color: AppColors.textBody, height: 30),
+            Text(
+              'Core Competencies',
+              style: TextStyle(
+                fontSize: 21,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textHeader,
+              ),
+            ),
+            SizedBox(height: 12),
+            SkillBullet(text: 'Embedded-system design and ARM microcontroller programming'),
+            SkillBullet(text: 'PCB and analog-circuit design using Altium Designer'),
+            SkillBullet(text: 'Machine-learning implementation using MATLAB and Python'),
+            SkillBullet(text: 'Deployment of machine-learning algorithms on embedded systems'),
+            SkillBullet(text: '3D surface reconstruction and biomedical signal processing'),
           ],
         ),
       ),
-    )
-        .animate(onPlay: (controller) => controller.repeat(reverse: true))
-        .shimmer(
-        delay: 2000.ms,
-        duration: 1000.ms,
-        color: AppColors.secondary.withAlpha(50))
-        .animate()
-        .fadeIn(duration: 800.ms)
-        .slideY(begin: 0.3, duration: 600.ms);
+    ).animate().fadeIn(duration: 700.ms).slideY(begin: 0.12);
   }
 }
 
+// -----------------------------------------------------------------------------
+// Work experience
+// -----------------------------------------------------------------------------
 class ExperienceSection extends StatelessWidget {
   const ExperienceSection({super.key});
 
@@ -465,114 +546,409 @@ class ExperienceSection extends StatelessWidget {
       children: [
         ExperienceTile(
           isFirst: true,
-          company: 'Parsiss (Navigation in Surgical System) Co.',
-          title: 'Image Processing on DICOM Images',
-          period: '15 June 2025 - 10 Oct 2025',
+          company: 'SERL Lab — Dr. Mehdi Fardmanesh',
+          title: 'Laboratory Work and Experimental Systems',
+          period: 'October 2025 – Present | Tehran, Iran',
           description:
-          'Focused on surface detection and registration of medical DICOM images for use in surgical navigation systems.',
-          companyUrl: 'http://www.parsiss.com/',
+          'Working with PT100 temperature sensors, building and using microfluidic chips, and using a four-probe setup to measure unknown resistance precisely. Also working with CNC equipment for PCB fabrication.',
         ),
         ExperienceTile(
-          company: 'Sharif University',
-          title: 'LLM Job Agent Hackathon (14th Place)',
-          period: '5 May 2025',
+          company: 'Parsiss — Navigation in Surgical Systems',
+          title: 'Image Processing on 3D DICOM Images',
+          period: 'June 2025 – October 2025 | Tehran, Iran',
           description:
-          'Participated in a competitive hackathon focused on creating and deploying Large Language Model agents for job-related tasks, achieving a top 15 rank.',
-        ),
-        ExperienceTile(
-          company: 'atieh sazan',
-          title: 'UI/UX developer',
-          period: '07/2024 - 12/2024',
-          description:
-          'Contributed to the user interface and experience design for various software applications, focusing on creating intuitive and user-friendly products.',
+          'Performed surface extraction on 3D DICOM images for surface registration in surgical navigation systems.',
+          companyUrl: 'https://www.parsiss.com/',
         ),
         ExperienceTile(
           isLast: true,
-          company: 'Sharif university of technology',
-          title: 'Bachelor: Electrical Engineering- Bioelectric',
-          period: '2022 - Present',
-          description:
-          'Pursuing a rigorous curriculum focused on the intersection of electrical engineering and biological systems, with projects in signal processing and embedded systems.',
+          company: 'Atieh Sazan',
+          title: 'UI/UX Developer',
+          period: 'July 2024 – December 2024 | Tehran, Iran',
+          description: 'Five-month UI/UX development role.',
         ),
       ],
-    ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.3, duration: 600.ms);
+    ).animate().fadeIn(duration: 700.ms).slideY(begin: 0.12);
   }
 }
 
+// -----------------------------------------------------------------------------
+// Education
+// -----------------------------------------------------------------------------
+class EducationSection extends StatelessWidget {
+  const EducationSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        EducationCard(
+          degree: 'M.Sc. Biomedical Engineering — Bioelectric',
+          institution: 'University of Tehran',
+          period: 'October 2026 – Present | Tehran, Iran',
+        ),
+        SizedBox(height: 16),
+        EducationCard(
+          degree: 'B.Sc. Biomedical Engineering — Bioelectric',
+          institution: 'Sharif University of Technology',
+          period: '2022 – June 2026 | Tehran, Iran',
+        ),
+      ],
+    ).animate().fadeIn(duration: 700.ms).slideY(begin: 0.12);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Projects
+// -----------------------------------------------------------------------------
 class ProjectsSection extends StatelessWidget {
   const ProjectsSection({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppColors.cardColor.withAlpha(128),
-      child: const Padding(
-        padding: EdgeInsets.all(24.0),
+      color: AppColors.cardColor.withAlpha(225),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: EdgeInsets.all(MediaQuery.of(context).size.width < 600 ? 14 : 24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 16),
-            ProjectTile(
-              title: "Project/Rewards Portfolio",
+            const ProjectTile(
+              icon: Icons.memory,
+              title: 'Altium Designer Projects — PCB Design',
               description:
-              "A collection of my volunteer and course projects, including 'My Reward' and AI implementations and Embedded projects.",
-              link:
-              "https://drive.google.com/drive/folders/1SHjofwtOaYAAcyYHiYoLjGvaeAMnc3cO",
+              'Design and implementation of microcontroller boards and analog circuits.',
+            ),
+            const ProjectTile(
+              icon: Icons.sports_esports_outlined,
+              title: 'C++ Game for the University BP',
+              description:
+              'A marble/jungle-style game developed using C++ and SDK tools.',
+            ),
+            const ProjectTile(
+              icon: Icons.electrical_services,
+              title: 'Circuit Theory — Impedance Conversion',
+              description:
+              'Designed a two-op-amp circuit to convert capacitive impedance behavior to inductive behavior.',
+            ),
+            const ProjectTile(
+              icon: Icons.calculate_outlined,
+              title: 'Circuit1 — Circuit Parameter Calculator',
+              description:
+              'Developed a Java application to model circuit parameters and calculate quantities such as current and equivalent resistance, with a PSpice-like approach.',
+            ),
+            const ProjectTile(
+              icon: Icons.account_tree_outlined,
+              title: 'Three Logic-Circuit Projects',
+              description:
+              'Implemented logic functions using standard logic ICs such as AND and OR gates, and designed PCBs for the circuits.',
+            ),
+            const ProjectTile(
+              icon: Icons.wifi_tethering,
+              title: 'Signals and Systems — Linear Antenna',
+              description: 'A linear-antenna project completed for the Signals and Systems course.',
+            ),
+            const ProjectTile(
+              icon: Icons.psychology_outlined,
+              title: 'Two Machine-Learning Projects — Voice and Image',
+              description:
+              'Applied Edge Impulse, K-nearest neighbors (KNN), and convolutional neural networks (CNNs) on embedded devices.',
+            ),
+            const ProjectTile(
+              icon: Icons.developer_board,
+              title: 'Five Embedded-Systems Projects',
+              description:
+              'Five major projects completed as part of the embedded-systems course.',
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: OutlinedButton.icon(
+                onPressed: () => _launchUrl(
+                  context,
+                  'https://drive.google.com/drive/folders/1SHjofwtOaYAAcyYHiYoLjGvaeAMnc3cO',
+                ),
+                icon: const Icon(Icons.folder_open),
+                label: const Text('More projects and portfolio files'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.secondary,
+                  side: const BorderSide(color: AppColors.secondary),
+                ),
+              ),
             ),
           ],
         ),
       ),
-    ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.3, duration: 600.ms);
+    ).animate().fadeIn(duration: 700.ms).slideY(begin: 0.12);
   }
 }
 
+// -----------------------------------------------------------------------------
+// Skills
+// -----------------------------------------------------------------------------
 class SkillsSection extends StatelessWidget {
   const SkillsSection({super.key});
 
+  static const List<SkillEntry> _expert = [
+    SkillEntry('ESP-IDF', 'Expert'),
+  ];
+
+  static const List<SkillEntry> _advanced = [
+    SkillEntry('Altium Designer', 'Advanced'),
+    SkillEntry('Proteus', 'Advanced'),
+    SkillEntry('OpenCV', 'Advanced'),
+    SkillEntry('VHDL', 'Advanced'),
+    SkillEntry('LaTeX', 'Advanced'),
+    SkillEntry('Linux', 'Advanced'),
+    SkillEntry('Microsoft Word', 'Advanced'),
+    SkillEntry('JavaScript', 'Advanced'),
+    SkillEntry('Embedded C', 'Advanced'),
+    SkillEntry('C++', 'Advanced'),
+    SkillEntry('Flutter', 'Advanced'),
+    SkillEntry('Python', 'Advanced'),
+    SkillEntry('.NET Core / .NET', 'Advanced'),
+    SkillEntry('IoT', 'Advanced'),
+  ];
+
+  static const List<SkillEntry> _intermediate = [
+    SkillEntry('Dart', 'Intermediate'),
+    SkillEntry('Wireshark', 'Intermediate'),
+    SkillEntry('C', 'Intermediate'),
+    SkillEntry('Kotlin', 'Intermediate'),
+    SkillEntry('Git', 'Intermediate'),
+    SkillEntry('PSpice', 'Intermediate'),
+    SkillEntry('CodeVision', 'Intermediate'),
+    SkillEntry('LOGO! Soft', 'Intermediate'),
+    SkillEntry('Java', 'Intermediate'),
+    SkillEntry('COMSOL', 'Intermediate'),
+    SkillEntry('Stimulsoft Report', 'Intermediate'),
+    SkillEntry('Verilog', 'Intermediate'),
+    SkillEntry('MATLAB', 'Intermediate'),
+    SkillEntry('Server Virtualization (ESX / VMware)', 'Intermediate'),
+    SkillEntry('ASP.NET', 'Intermediate'),
+    SkillEntry('LabVIEW', 'Intermediate'),
+    SkillEntry('Logo', 'Intermediate'),
+    SkillEntry('Assembly', 'Intermediate'),
+    SkillEntry('C#', 'Intermediate'),
+  ];
+
+  static const List<String> _focusAreas = [
+    '3D Surface Reconstruction',
+    'Biomedical Signal Processing',
+    'Machine Learning in Biomedical Applications',
+    'Edge Impulse for Embedded AI',
+    'ARM Microcontroller Programming',
+    'Analog-Circuit and PCB Design',
+    'Microfluidic Systems',
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 20,
-      runSpacing: 20,
-      children: const [
-        SkillCard(name: 'Flutter', icon: FontAwesomeIcons.mobileScreen),
-        SkillCard(name: 'Python', icon: FontAwesomeIcons.python),
-        SkillCard(name: 'Linux', icon: FontAwesomeIcons.linux),
-        SkillCard(name: 'C++', icon: FontAwesomeIcons.c),
-        SkillCard(name: 'JavaScript', icon: FontAwesomeIcons.js),
-        SkillCard(name: 'Embedded C', icon: FontAwesomeIcons.microchip),
-        SkillCard(name: 'OpenCV', icon: FontAwesomeIcons.cameraRetro),
-        SkillCard(name: 'VHDL', icon: FontAwesomeIcons.code),
-        SkillCard(name: '.NET', icon: FontAwesomeIcons.windows),
-        SkillCard(name: 'Altium', icon: FontAwesomeIcons.rulerCombined),
-        SkillCard(name: 'Proteus', icon: FontAwesomeIcons.sitemap),
-        SkillCard(name: 'LaTex', icon: FontAwesomeIcons.fileLines),
-        SkillCard(name: 'Word', icon: FontAwesomeIcons.fileWord),
-        SkillCard(name: 'Dart', icon: FontAwesomeIcons.code),
-        SkillCard(name: 'C', icon: FontAwesomeIcons.c),
-        SkillCard(name: 'Java', icon: FontAwesomeIcons.java),
-        SkillCard(name: 'C#', icon: FontAwesomeIcons.c),
-        SkillCard(name: 'MATLAB', icon: FontAwesomeIcons.squareRootVariable),
-        SkillCard(name: 'Kotlin', icon: FontAwesomeIcons.code),
-        SkillCard(name: 'Assembly', icon: FontAwesomeIcons.microchip),
-        SkillCard(name: 'Verilog', icon: FontAwesomeIcons.code),
-        SkillCard(name: 'Git', icon: FontAwesomeIcons.gitAlt),
-        SkillCard(name: 'ASP.NET', icon: FontAwesomeIcons.code),
-        SkillCard(name: 'JQuery', icon: FontAwesomeIcons.js),
-        SkillCard(name: 'Wireshark', icon: FontAwesomeIcons.networkWired),
-        SkillCard(name: 'VMware', icon: FontAwesomeIcons.server),
-        SkillCard(name: 'LabVIEW', icon: FontAwesomeIcons.chartBar),
-        SkillCard(name: 'Pspice', icon: FontAwesomeIcons.waveSquare),
-        SkillCard(name: 'CodeVision', icon: FontAwesomeIcons.microchip),
-        SkillCard(name: 'LOGO!', icon: FontAwesomeIcons.lightbulb),
-      ]
-          .animate(interval: 50.ms)
-          .fadeIn(duration: 800.ms)
-          .slideY(begin: 0.3, duration: 600.ms),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SkillGroup(title: 'Expert', skills: _expert),
+        const SizedBox(height: 22),
+        const SkillGroup(title: 'Advanced', skills: _advanced),
+        const SizedBox(height: 22),
+        const SkillGroup(title: 'Intermediate', skills: _intermediate),
+        const SizedBox(height: 22),
+        Card(
+          color: AppColors.cardColor.withAlpha(220),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          child: Padding(
+            padding: const EdgeInsets.all(22),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Technical Focus Areas',
+                  style: TextStyle(
+                    color: AppColors.textHeader,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 19,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: _focusAreas
+                      .map((item) => FocusChip(label: item))
+                      .toList(),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    ).animate().fadeIn(duration: 650.ms).slideY(begin: 0.08);
+  }
+}
+
+class SkillEntry {
+  final String name;
+  final String level;
+
+  const SkillEntry(this.name, this.level);
+}
+
+class SkillGroup extends StatelessWidget {
+  final String title;
+  final List<SkillEntry> skills;
+
+  const SkillGroup({
+    super.key,
+    required this.title,
+    required this.skills,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: AppColors.cardColor.withAlpha(220),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      child: Padding(
+        padding: const EdgeInsets.all(22),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                color: AppColors.textHeader,
+                fontWeight: FontWeight.bold,
+                fontSize: 19,
+              ),
+            ),
+            const SizedBox(height: 14),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: skills
+                  .map((skill) => SkillChip(name: skill.name, level: skill.level))
+                  .toList(),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
+class SkillChip extends StatelessWidget {
+  final String name;
+  final String level;
+
+  const SkillChip({
+    super.key,
+    required this.name,
+    required this.level,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.background.withAlpha(190),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.secondary.withAlpha(70)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            name,
+            style: const TextStyle(
+              color: AppColors.textHeader,
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            level,
+            style: const TextStyle(
+              color: AppColors.secondary,
+              fontSize: 11,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class FocusChip extends StatelessWidget {
+  final String label;
+
+  const FocusChip({super.key, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
+      decoration: BoxDecoration(
+        color: AppColors.background.withAlpha(190),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.secondary.withAlpha(70)),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(color: AppColors.readableText, fontSize: 13),
+      ),
+    );
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Certificates
+// -----------------------------------------------------------------------------
+class CertificatesSection extends StatelessWidget {
+  const CertificatesSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Card(
+      color: AppColors.cardColor,
+      child: Padding(
+        padding: EdgeInsets.all(22),
+        child: Column(
+          children: [
+            CertificateTile(
+              title: 'Internal Electric System',
+              issuer:
+              'Technical and Vocational Training Institute — Tehran, Center No. 9 Moshiriye',
+            ),
+            Divider(color: AppColors.textBody),
+            CertificateTile(
+              title: 'Logic Circuit Architecture',
+              issuer:
+              'Technical and Vocational Training Institute — Tehran, Center No. 2 Shahid Sohi',
+            ),
+            Divider(color: AppColors.textBody),
+            CertificateTile(
+              title: 'ARM Microcontrollers',
+              issuer:
+              'Technical and Vocational Training Institute — Tehran, Center No. 9 Moshiriye; with Master Beigy',
+            ),
+            Divider(color: AppColors.textBody),
+            CertificateTile(
+              title: 'Altium Designer (PCB)',
+              issuer: 'PCB design using Altium Designer',
+            ),
+          ],
+        ),
+      ),
+    ).animate().fadeIn(duration: 700.ms).slideY(begin: 0.12);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Contact / footer
+// -----------------------------------------------------------------------------
 class FooterSection extends StatelessWidget {
   const FooterSection({super.key});
 
@@ -582,164 +958,193 @@ class FooterSection extends StatelessWidget {
       children: [
         const Text(
           "Let's Connect",
-          style: TextStyle(
-              fontFamily: 'Parisienne',
-              fontSize: 42,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textHeader),
-        ),
-        const SizedBox(height: 20),
-        const Text(
-          "Feel free to reach out for collaborations or just a friendly hello!",
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16, color: AppColors.textBody),
+          style: TextStyle(
+            fontFamily: 'Parisienne',
+            fontSize: 44,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textHeader,
+          ),
         ),
-        const SizedBox(height: 30),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        const SizedBox(height: 16),
+        const Text(
+          'For collaboration, research, or project inquiries, feel free to contact me.',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 16, color: AppColors.textBody, height: 1.6),
+        ),
+        const SizedBox(height: 24),
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 16,
           children: [
             IconButton(
-              icon: const Icon(FontAwesomeIcons.linkedin,
-                  color: AppColors.textBody),
-              onPressed: () => _launchURL(context,
-                  'https://www.linkedin.com/in/mohamadparsa-malek-0214322a2'),
-              iconSize: 30,
+              icon: const Icon(FontAwesomeIcons.linkedin),
+              color: AppColors.secondary,
+              iconSize: 29,
               tooltip: 'LinkedIn',
+              onPressed: () => _launchUrl(
+                context,
+                'https://www.linkedin.com/in/mohamadparsa-malek-0214322a2',
+              ),
             ),
-            const SizedBox(width: 20),
             IconButton(
-              icon: const Icon(FontAwesomeIcons.telegram,
-                  color: AppColors.textBody),
-              onPressed: () => _launchURL(context, 'https://t.me/TheLordMpM'),
-              iconSize: 30,
+              icon: const Icon(FontAwesomeIcons.telegram),
+              color: AppColors.secondary,
+              iconSize: 29,
               tooltip: 'Telegram',
+              onPressed: () => _launchUrl(context, 'https://t.me/TheLordMpM'),
+            ),
+            IconButton(
+              icon: const Icon(Icons.email_outlined),
+              color: AppColors.secondary,
+              iconSize: 29,
+              tooltip: 'Email',
+              onPressed: () => _launchUrl(
+                context,
+                'mailto:mohamadparsamalek.30@gmail.com',
+              ),
             ),
           ],
         ),
-        const SizedBox(height: 40),
-        OutlinedButton(
-          onPressed: () {
-            // Corrected path from the last time, assuming PDF is in assets/ folder.
-            _launchURL(context, 'assets/assets/Mohammad-Parsa-Malek-Resume.pdf');
-          },
+        const SizedBox(height: 22),
+        OutlinedButton.icon(
+          onPressed: () => _openResume(context),
+          icon: const Icon(Icons.download),
+          label: const Text('Download Full CV'),
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.secondary,
             side: const BorderSide(color: AppColors.secondary),
-            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8)),
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 17),
           ),
-          child: const Text('Download Full CV'),
         ),
-        const SizedBox(height: 40),
-        ElevatedButton(
+        const SizedBox(height: 28),
+        ElevatedButton.icon(
           onPressed: () async {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('Loading games...'),
-              backgroundColor: AppColors.primary,
-            ));
-            await games.loadLibrary();
-            if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Loading games...'),
+                backgroundColor: AppColors.primary,
+              ),
+            );
+            try {
+              await games.loadLibrary();
+              if (!context.mounted) return;
               Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => games.GamesPage()));
+                MaterialPageRoute<void>(
+                  builder: (context) => games.GamesPage(),
+                ),
+              );
+            } catch (error) {
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Could not load games: $error')),
+              );
             }
           },
+          icon: const Icon(Icons.sports_esports_outlined),
+          label: const Text('Bored? Try a game'),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.cardColor,
             foregroundColor: AppColors.secondary,
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8)),
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 17),
           ),
-          child: const Text("Boring...?, try this",
-              style: TextStyle(fontWeight: FontWeight.bold)),
         ),
-        const SizedBox(height: 50),
+        const SizedBox(height: 48),
         const Text(
-          'Designed & Built by Mohammad Parsa Malek',
-          style: TextStyle(fontSize: 12),
+          'Designed & built by Mohammad Parsa Malek',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 12, color: AppColors.textBody),
         ),
       ],
-    ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.3, duration: 600.ms);
+    ).animate().fadeIn(duration: 700.ms).slideY(begin: 0.12);
   }
 }
 
-// --- REUSABLE WIDGETS ---
-
+// -----------------------------------------------------------------------------
+// Reusable widgets
+// -----------------------------------------------------------------------------
 class SectionTitle extends StatelessWidget {
   final String title;
+
   const SectionTitle({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20.0),
-      child: Text(title,
-          style: const TextStyle(
-              fontFamily: 'Parisienne',
-              fontSize: 42,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textHeader)),
+      padding: const EdgeInsets.only(bottom: 22),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontFamily: 'Parisienne',
+          fontSize: 42,
+          fontWeight: FontWeight.bold,
+          color: AppColors.textHeader,
+        ),
+      ),
     );
   }
 }
 
-class SkillCard extends StatefulWidget {
-  final String name;
-  final IconData icon;
+class InfoRow extends StatelessWidget {
+  final String label;
+  final String value;
 
-  const SkillCard({super.key, required this.name, required this.icon});
-
-  @override
-  State<SkillCard> createState() => _SkillCardState();
-}
-
-class _SkillCardState extends State<SkillCard> {
-  bool _isHovered = false;
+  const InfoRow({
+    super.key,
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        // MODIFIED: Reduced width and height to fit two on a mobile screen
-        width: 140,
-        height: 110,
-        padding: const EdgeInsets.all(12), // Slightly reduced padding
-        decoration: BoxDecoration(
-          color: _isHovered
-              ? AppColors.primary
-              : AppColors.cardColor.withAlpha(128),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.secondary.withAlpha(51)),
-          boxShadow: [
-            if (_isHovered)
-              BoxShadow(
-                color: AppColors.secondary.withAlpha(26),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              )
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // MODIFIED: Reduced icon size
-            Icon(widget.icon,
-                size: 36,
-                color: _isHovered ? Colors.white : AppColors.secondary),
-            // MODIFIED: Reduced spacing
-            const SizedBox(height: 10),
-            Text(widget.name,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: _isHovered ? Colors.white : AppColors.textHeader,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14)), // Slightly smaller font
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width < 600 ? 88 : 112,
+            child: Text(
+              '$label:',
+              style: const TextStyle(
+                color: AppColors.textHeader,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Expanded(
+            child: SelectableText(
+              value,
+              style: const TextStyle(color: AppColors.textBody, height: 1.45),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SkillBullet extends StatelessWidget {
+  final String text;
+
+  const SkillBullet({super.key, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.arrow_right, color: AppColors.secondary, size: 21),
+          const SizedBox(width: 7),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(color: AppColors.textBody, height: 1.5),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -767,56 +1172,140 @@ class ExperienceTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget companyName = Text(
+      company,
+      style: const TextStyle(
+        fontSize: 15,
+        fontWeight: FontWeight.w600,
+        color: AppColors.secondary,
+      ),
+    );
+
+    if (companyUrl != null) {
+      companyName = InkWell(
+        onTap: () => _launchUrl(context, companyUrl!),
+        child: companyName,
+      );
+    }
+
     return TimelineTile(
       isFirst: isFirst,
       isLast: isLast,
-      beforeLineStyle:
-      const LineStyle(color: AppColors.secondary, thickness: 2),
-      indicatorStyle: IndicatorStyle(
-        width: 20,
+      beforeLineStyle: const LineStyle(
         color: AppColors.secondary,
-        padding: const EdgeInsets.all(4),
-        iconStyle: IconStyle(
-            iconData: Icons.circle, color: Colors.white, fontSize: 12),
+        thickness: 2,
+      ),
+      indicatorStyle: const IndicatorStyle(
+        width: 18,
+        color: AppColors.secondary,
+        padding: EdgeInsets.all(3),
       ),
       endChild: Padding(
-        padding: const EdgeInsets.only(left: 24, top: 8, bottom: 24, right: 8),
-        child: Column(
+        padding: const EdgeInsets.only(left: 22, top: 4, bottom: 25, right: 4),
+        child: Card(
+          color: AppColors.cardColor.withAlpha(225),
+          margin: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(13),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  period,
+                  style: const TextStyle(
+                    color: AppColors.secondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: AppColors.textHeader,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 19,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                companyName,
+                const SizedBox(height: 12),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    color: AppColors.textBody,
+                    fontSize: 14,
+                    height: 1.6,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class EducationCard extends StatelessWidget {
+  final String degree;
+  final String institution;
+  final String period;
+
+  const EducationCard({
+    super.key,
+    required this.degree,
+    required this.institution,
+    required this.period,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: AppColors.cardColor.withAlpha(225),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      child: Padding(
+        padding: const EdgeInsets.all(22),
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(period,
-                style:
-                const TextStyle(fontSize: 14, color: AppColors.textBody)),
-            const SizedBox(height: 4),
-            Text(title,
-                style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textHeader)),
-            const SizedBox(height: 4),
-            RichText(
-              text: TextSpan(
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.secondary,
-                    fontFamily:
-                    Theme.of(context).textTheme.bodyLarge?.fontFamily),
+            const Icon(Icons.school_outlined,
+                color: AppColors.secondary, size: 30),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextSpan(
-                    text: company,
-                    recognizer: companyUrl != null
-                        ? (TapGestureRecognizer()
-                      ..onTap = () => _launchURL(context, companyUrl!))
-                        : null,
+                  Text(
+                    degree,
+                    style: const TextStyle(
+                      color: AppColors.textHeader,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                  const SizedBox(height: 7),
+                  Text(
+                    institution,
+                    style: const TextStyle(
+                      color: AppColors.secondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    period,
+                    style: const TextStyle(
+                      color: AppColors.textBody,
+                      fontSize: 13,
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 12),
-            Text(description,
-                style: const TextStyle(
-                    fontSize: 14, color: AppColors.textBody, height: 1.5)),
           ],
         ),
       ),
@@ -824,23 +1313,58 @@ class ExperienceTile extends StatelessWidget {
   }
 }
 
-class InfoRow extends StatelessWidget {
-  final String label;
-  final String value;
-  const InfoRow({super.key, required this.label, required this.value});
+class ProjectTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String description;
+
+  const ProjectTile({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.description,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 9),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("$label: ",
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold, color: AppColors.textHeader)),
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: AppColors.secondary, size: 22),
+          ),
+          const SizedBox(width: 14),
           Expanded(
-            child:
-            Text(value, style: const TextStyle(color: AppColors.textBody)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: AppColors.textHeader,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    color: AppColors.textBody,
+                    height: 1.5,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -848,130 +1372,83 @@ class InfoRow extends StatelessWidget {
   }
 }
 
-class SkillBullet extends StatelessWidget {
-  final String text;
-  const SkillBullet({super.key, required this.text});
+class CertificateTile extends StatelessWidget {
+  final String title;
+  final String issuer;
+
+  const CertificateTile({
+    super.key,
+    required this.title,
+    required this.issuer,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.arrow_right, color: AppColors.secondary, size: 20),
-          const SizedBox(width: 8),
+          const Icon(Icons.workspace_premium_outlined,
+              color: AppColors.secondary, size: 25),
+          const SizedBox(width: 14),
           Expanded(
-              child:
-              Text(text, style: const TextStyle(color: AppColors.textBody))),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: AppColors.textHeader,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  issuer,
+                  style: const TextStyle(
+                    color: AppColors.textBody,
+                    height: 1.5,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
-class ProjectTile extends StatelessWidget {
-  final String title;
-  final String description;
-  final String link;
-  const ProjectTile(
-      {super.key,
-        required this.title,
-        required this.description,
-        required this.link});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: const Icon(FontAwesomeIcons.diagramProject,
-          color: AppColors.secondary),
-      title: Text(title,
-          style: const TextStyle(
-              fontWeight: FontWeight.bold, color: AppColors.textHeader)),
-      subtitle:
-      Text(description, style: const TextStyle(color: AppColors.textBody)),
-      onTap: () => _launchURL(context, link),
-      contentPadding: EdgeInsets.zero,
-    );
-  }
-}
-
-// --- HELPER FUNCTIONS ---
-
-void _launchURL(BuildContext context, String url) async {
-  final Uri uri = Uri.parse(url);
+// -----------------------------------------------------------------------------
+// URL helpers
+// -----------------------------------------------------------------------------
+Future<void> _launchUrl(BuildContext context, String target) async {
+  final Uri uri = Uri.parse(target);
   try {
-    await launchUrl(uri, webOnlyWindowName: '_self');
-  } catch (e) {
+    final bool launched = await launchUrl(
+      uri,
+      webOnlyWindowName: '_blank',
+    );
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not open: $target')),
+      );
+    }
+  } catch (error) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              'Error: Could not open the link. Target URL: $url. Please ensure the file is in the `assets` folder and `pubspec.yaml` is correct.'),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text('Could not open the link: $error')),
       );
     }
   }
 }
 
-class AnimatedAuroraBackground extends StatefulWidget {
-  const AnimatedAuroraBackground({super.key});
-
-  @override
-  State<AnimatedAuroraBackground> createState() =>
-      _AnimatedAuroraBackgroundState();
-}
-
-class _AnimatedAuroraBackgroundState extends State<AnimatedAuroraBackground>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: const Duration(seconds: 20));
-    _animation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
-    _controller.repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, child) {
-        return Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              transform: GradientRotation(_animation.value * 2 * 3.14159),
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.background,
-                AppColors.primary.withAlpha(128),
-                AppColors.backgroundEnd,
-                AppColors.secondary.withAlpha(77),
-              ],
-              stops: const [0.1, 0.4, 0.8, 1.0],
-            ),
-          ),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 70, sigmaY: 70),
-            child: Container(color: Colors.black.withAlpha(51)),
-          ),
-        );
-      },
-    );
-  }
+Future<void> _openResume(BuildContext context) async {
+  // Put the PDF at: web/files/Mohammad-Parsa-Malek-Resume.pdf
+  // Uri.base.resolve keeps this working for both root and project GitHub Pages.
+  final Uri resumeUri =
+  Uri.base.resolve('files/Mohammad-Parsa-Malek-Resume.pdf');
+  await _launchUrl(context, resumeUri.toString());
 }
