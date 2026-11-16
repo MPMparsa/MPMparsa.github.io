@@ -15,6 +15,7 @@ dependencies:
   visibility_detector: ^0.4.0+1
   timeline_tile: ^2.0.0
   font_awesome_flutter: ^10.7.0
+  web: ^1.1.1
 
 dev_dependencies:
   flutter_test:
@@ -28,7 +29,7 @@ flutter:
     - assets/images/ # Add this line to include the whole folder
     - assets/fonts/
     - assets/icon/
-    - assets/Mohammad-Parsa-Malek-Resume.pdf
+    - assets/Mohammad_Parsa_Malek_Resume.pdf
   fonts:
     - family: Parisienne
       fonts:

@@ -1,5 +1,5 @@
 import 'dart:ui';
-
+import 'package:web/web.dart' as web;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -210,7 +210,7 @@ class _ResumePageState extends State<ResumePage> {
                         vertical: 58,
                       ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           _section(
                             key: _aboutKey,
@@ -351,7 +351,7 @@ class HeaderWithDynamicBackground extends StatelessWidget {
               alignment: const Alignment(0, -0.45),
               errorBuilder: (context, error, stackTrace) =>
                   Container(color: AppColors.background),
-            )
+            ).animate().fadeIn(duration: 1100.ms, curve: Curves.easeInOut)
           else
             Container(color: AppColors.background),
           Container(
@@ -447,7 +447,7 @@ class HeroSection extends StatelessWidget {
                     ),
                   ),
                   OutlinedButton.icon(
-                    onPressed: () => _openResume(context),
+                    onPressed: () => _viewResume(context),
                     icon: const Icon(Icons.picture_as_pdf_outlined),
                     label: const Text('View CV'),
                     style: OutlinedButton.styleFrom(
@@ -482,55 +482,109 @@ class AboutSection extends StatelessWidget {
       elevation: 5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: EdgeInsets.all(MediaQuery.of(context).size.width < 600 ? 18 : 28),
-        child: const Column(
+        padding: EdgeInsets.all(
+          MediaQuery.of(context).size.width < 600 ? 18 : 28,
+        ),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Bioelectric engineering student with interests in biomedical applications, biomedical signal processing, embedded-system design, and machine learning on embedded devices.',
               style: TextStyle(
                 fontSize: 16,
                 color: AppColors.readableText,
                 height: 1.7,
               ),
-            ),
-            SizedBox(height: 24),
-            Text(
+            )
+                .animate()
+                .fadeIn(delay: 100.ms, duration: 700.ms)
+                .slideY(begin: 0.07, duration: 700.ms),
+            const SizedBox(height: 24),
+            const Text(
               'Personal Information',
               style: TextStyle(
                 fontSize: 21,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textHeader,
               ),
-            ),
-            SizedBox(height: 12),
-            InfoRow(label: 'Location', value: 'Narmak, Tehran, Iran'),
-            InfoRow(label: 'Born', value: '2004, Tehran'),
-            InfoRow(label: 'Phone', value: '09900100336'),
-            InfoRow(
+            )
+                .animate()
+                .fadeIn(delay: 220.ms, duration: 550.ms)
+                .slideX(begin: -0.07, duration: 550.ms),
+            const SizedBox(height: 12),
+            const InfoRow(label: 'Location', value: 'Narmak, Tehran, Iran')
+                .animate()
+                .fadeIn(delay: 300.ms, duration: 480.ms)
+                .slideX(begin: -0.04, duration: 480.ms),
+            const InfoRow(label: 'Born', value: '2004, Tehran')
+                .animate()
+                .fadeIn(delay: 370.ms, duration: 480.ms)
+                .slideX(begin: -0.04, duration: 480.ms),
+            const InfoRow(label: 'Phone', value: '09900100336')
+                .animate()
+                .fadeIn(delay: 440.ms, duration: 480.ms)
+                .slideX(begin: -0.04, duration: 480.ms),
+            const InfoRow(
               label: 'Email',
               value: 'mohamadparsamalek.30@gmail.com',
-            ),
-            InfoRow(label: 'Language', value: 'English — Upper Intermediate'),
-            Divider(color: AppColors.textBody, height: 30),
-            Text(
+            )
+                .animate()
+                .fadeIn(delay: 510.ms, duration: 480.ms)
+                .slideX(begin: -0.04, duration: 480.ms),
+            const InfoRow(
+              label: 'Language',
+              value: 'English — Upper Intermediate',
+            )
+                .animate()
+                .fadeIn(delay: 580.ms, duration: 480.ms)
+                .slideX(begin: -0.04, duration: 480.ms),
+            const Divider(color: AppColors.textBody, height: 30),
+            const Text(
               'Core Competencies',
               style: TextStyle(
                 fontSize: 21,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textHeader,
               ),
-            ),
-            SizedBox(height: 12),
-            SkillBullet(text: 'Embedded-system design and ARM microcontroller programming'),
-            SkillBullet(text: 'PCB and analog-circuit design using Altium Designer'),
-            SkillBullet(text: 'Machine-learning implementation using MATLAB and Python'),
-            SkillBullet(text: 'Deployment of machine-learning algorithms on embedded systems'),
-            SkillBullet(text: '3D surface reconstruction and biomedical signal processing'),
+            )
+                .animate()
+                .fadeIn(delay: 660.ms, duration: 550.ms)
+                .slideX(begin: -0.07, duration: 550.ms),
+            const SizedBox(height: 12),
+            const SkillBullet(
+              text: 'Embedded-system design and ARM microcontroller programming',
+            )
+                .animate()
+                .fadeIn(delay: 740.ms, duration: 480.ms)
+                .slideY(begin: 0.06, duration: 480.ms),
+            const SkillBullet(
+              text: 'PCB and analog-circuit design using Altium Designer',
+            )
+                .animate()
+                .fadeIn(delay: 810.ms, duration: 480.ms)
+                .slideY(begin: 0.06, duration: 480.ms),
+            const SkillBullet(
+              text: 'Machine-learning implementation using MATLAB and Python',
+            )
+                .animate()
+                .fadeIn(delay: 880.ms, duration: 480.ms)
+                .slideY(begin: 0.06, duration: 480.ms),
+            const SkillBullet(
+              text: 'Deployment of machine-learning algorithms on embedded systems',
+            )
+                .animate()
+                .fadeIn(delay: 950.ms, duration: 480.ms)
+                .slideY(begin: 0.06, duration: 480.ms),
+            const SkillBullet(
+              text: '3D surface reconstruction and biomedical signal processing',
+            )
+                .animate()
+                .fadeIn(delay: 1020.ms, duration: 480.ms)
+                .slideY(begin: 0.06, duration: 480.ms),
           ],
         ),
       ),
-    ).animate().fadeIn(duration: 700.ms).slideY(begin: 0.12);
+    ).animate().fadeIn(duration: 650.ms).slideY(begin: 0.05);
   }
 }
 
@@ -542,33 +596,42 @@ class ExperienceSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       children: [
-        ExperienceTile(
+        const ExperienceTile(
           isFirst: true,
           company: 'SERL Lab — Dr. Mehdi Fardmanesh',
           title: 'Laboratory Work and Experimental Systems',
           period: 'October 2025 – Present | Tehran, Iran',
           description:
           'Working with PT100 temperature sensors, building and using microfluidic chips, and using a four-probe setup to measure unknown resistance precisely. Also working with CNC equipment for PCB fabrication.',
-        ),
-        ExperienceTile(
+        )
+            .animate()
+            .fadeIn(delay: 80.ms, duration: 650.ms)
+            .slideX(begin: -0.06, duration: 650.ms),
+        const ExperienceTile(
           company: 'Parsiss — Navigation in Surgical Systems',
           title: 'Image Processing on 3D DICOM Images',
           period: 'June 2025 – October 2025 | Tehran, Iran',
           description:
           'Performed surface extraction on 3D DICOM images for surface registration in surgical navigation systems.',
           companyUrl: 'https://www.parsiss.com/',
-        ),
-        ExperienceTile(
+        )
+            .animate()
+            .fadeIn(delay: 240.ms, duration: 650.ms)
+            .slideX(begin: 0.06, duration: 650.ms),
+        const ExperienceTile(
           isLast: true,
           company: 'Atieh Sazan',
           title: 'UI/UX Developer',
           period: 'July 2024 – December 2024 | Tehran, Iran',
           description: 'Five-month UI/UX development role.',
-        ),
+        )
+            .animate()
+            .fadeIn(delay: 400.ms, duration: 650.ms)
+            .slideX(begin: -0.06, duration: 650.ms),
       ],
-    ).animate().fadeIn(duration: 700.ms).slideY(begin: 0.12);
+    );
   }
 }
 
@@ -618,48 +681,48 @@ class ProjectsSection extends StatelessWidget {
               title: 'Altium Designer Projects — PCB Design',
               description:
               'Design and implementation of microcontroller boards and analog circuits.',
-            ),
+            ).animate().fadeIn(delay: 0.ms, duration: 450.ms).slideX(begin: -0.04, delay: 0.ms, duration: 450.ms),
             const ProjectTile(
               icon: Icons.sports_esports_outlined,
               title: 'C++ Game for the University BP',
               description:
               'A marble/jungle-style game developed using C++ and SDK tools.',
-            ),
+            ).animate().fadeIn(delay: 70.ms, duration: 450.ms).slideX(begin: -0.04, delay: 70.ms, duration: 450.ms),
             const ProjectTile(
               icon: Icons.electrical_services,
               title: 'Circuit Theory — Impedance Conversion',
               description:
               'Designed a two-op-amp circuit to convert capacitive impedance behavior to inductive behavior.',
-            ),
+            ).animate().fadeIn(delay: 140.ms, duration: 450.ms).slideX(begin: -0.04, delay: 140.ms, duration: 450.ms),
             const ProjectTile(
               icon: Icons.calculate_outlined,
               title: 'Circuit1 — Circuit Parameter Calculator',
               description:
               'Developed a Java application to model circuit parameters and calculate quantities such as current and equivalent resistance, with a PSpice-like approach.',
-            ),
+            ).animate().fadeIn(delay: 210.ms, duration: 450.ms).slideX(begin: -0.04, delay: 210.ms, duration: 450.ms),
             const ProjectTile(
               icon: Icons.account_tree_outlined,
               title: 'Three Logic-Circuit Projects',
               description:
               'Implemented logic functions using standard logic ICs such as AND and OR gates, and designed PCBs for the circuits.',
-            ),
+            ).animate().fadeIn(delay: 280.ms, duration: 450.ms).slideX(begin: -0.04, delay: 280.ms, duration: 450.ms),
             const ProjectTile(
               icon: Icons.wifi_tethering,
               title: 'Signals and Systems — Linear Antenna',
               description: 'A linear-antenna project completed for the Signals and Systems course.',
-            ),
+            ).animate().fadeIn(delay: 350.ms, duration: 450.ms).slideX(begin: -0.04, delay: 350.ms, duration: 450.ms),
             const ProjectTile(
               icon: Icons.psychology_outlined,
               title: 'Two Machine-Learning Projects — Voice and Image',
               description:
               'Applied Edge Impulse, K-nearest neighbors (KNN), and convolutional neural networks (CNNs) on embedded devices.',
-            ),
+            ).animate().fadeIn(delay: 420.ms, duration: 450.ms).slideX(begin: -0.04, delay: 420.ms, duration: 450.ms),
             const ProjectTile(
               icon: Icons.developer_board,
               title: 'Five Embedded-Systems Projects',
               description:
               'Five major projects completed as part of the embedded-systems course.',
-            ),
+            ).animate().fadeIn(delay: 490.ms, duration: 450.ms).slideX(begin: -0.04, delay: 490.ms, duration: 450.ms),
             const SizedBox(height: 12),
             Align(
               alignment: Alignment.centerLeft,
@@ -674,7 +737,7 @@ class ProjectsSection extends StatelessWidget {
                   foregroundColor: AppColors.secondary,
                   side: const BorderSide(color: AppColors.secondary),
                 ),
-              ),
+              ).animate().fadeIn(delay: 560.ms, duration: 450.ms),
             ),
           ],
         ),
@@ -773,9 +836,24 @@ class SkillsSection extends StatelessWidget {
                 Wrap(
                   spacing: 10,
                   runSpacing: 10,
-                  children: _focusAreas
-                      .map((item) => FocusChip(label: item))
-                      .toList(),
+                  children: _focusAreas.asMap().entries.map((entry) {
+                    final int index = entry.key;
+                    final String item = entry.value;
+
+                    return FocusChip(label: item)
+                        .animate()
+                        .fadeIn(
+                      delay: Duration(milliseconds: index * 70),
+                      duration: 450.ms,
+                      curve: Curves.easeOutCubic,
+                    )
+                        .slideY(
+                      begin: 0.12,
+                      delay: Duration(milliseconds: index * 70),
+                      duration: 450.ms,
+                      curve: Curves.easeOutCubic,
+                    );
+                  }).toList(),
                 ),
               ],
             ),
@@ -825,9 +903,28 @@ class SkillGroup extends StatelessWidget {
             Wrap(
               spacing: 10,
               runSpacing: 10,
-              children: skills
-                  .map((skill) => SkillChip(name: skill.name, level: skill.level))
-                  .toList(),
+              children: skills.asMap().entries.map((entry) {
+                final int index = entry.key;
+                final SkillEntry skill = entry.value;
+
+                return SkillChip(
+                  key: ValueKey<String>(skill.name),
+                  name: skill.name,
+                  level: skill.level,
+                )
+                    .animate()
+                    .fadeIn(
+                  delay: Duration(milliseconds: index * 45),
+                  duration: 420.ms,
+                  curve: Curves.easeOutCubic,
+                )
+                    .slideY(
+                  begin: 0.14,
+                  delay: Duration(milliseconds: index * 45),
+                  duration: 420.ms,
+                  curve: Curves.easeOutCubic,
+                );
+              }).toList(),
             ),
           ],
         ),
@@ -954,109 +1051,157 @@ class FooterSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Text(
-          "Let's Connect",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: 'Parisienne',
-            fontSize: 44,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textHeader,
+    return SizedBox(
+      width: double.infinity,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 760),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  "Let's Connect",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Parisienne',
+                    fontSize: 44,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textHeader,
+                  ),
+                )
+                    .animate()
+                    .fadeIn(delay: 100.ms, duration: 650.ms)
+                    .slideY(begin: -0.08, duration: 650.ms),
+                const SizedBox(height: 16),
+                const Text(
+                  'For collaboration, research, or project inquiries, feel free to contact me.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: AppColors.textBody,
+                    height: 1.6,
+                  ),
+                )
+                    .animate()
+                    .fadeIn(delay: 240.ms, duration: 650.ms)
+                    .slideY(begin: 0.10, duration: 650.ms),
+                const SizedBox(height: 24),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  runAlignment: WrapAlignment.center,
+                  spacing: 16,
+                  runSpacing: 8,
+                  children: [
+                    IconButton(
+                      icon: const Icon(FontAwesomeIcons.linkedin),
+                      color: AppColors.secondary,
+                      iconSize: 29,
+                      tooltip: 'LinkedIn',
+                      onPressed: () => _launchUrl(
+                        context,
+                        'https://www.linkedin.com/in/mohamadparsa-malek-0214322a2',
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(FontAwesomeIcons.telegram),
+                      color: AppColors.secondary,
+                      iconSize: 29,
+                      tooltip: 'Telegram',
+                      onPressed: () =>
+                          _launchUrl(context, 'https://t.me/TheLordMpM'),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.email_outlined),
+                      color: AppColors.secondary,
+                      iconSize: 29,
+                      tooltip: 'Email',
+                      onPressed: () => _launchUrl(
+                        context,
+                        'mailto:mohamadparsamalek.30@gmail.com',
+                      ),
+                    ),
+                  ],
+                )
+                    .animate()
+                    .fadeIn(delay: 380.ms, duration: 650.ms)
+                    .slideY(begin: 0.10, duration: 650.ms),
+                const SizedBox(height: 22),
+                Center(
+                  child: OutlinedButton.icon(
+                    onPressed: () => _downloadResume(context),
+                    icon: const Icon(Icons.download),
+                    label: const Text('Download Full CV'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.secondary,
+                      side: const BorderSide(color: AppColors.secondary),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 30,
+                        vertical: 17,
+                      ),
+                    ),
+                  ),
+                )
+                    .animate()
+                    .fadeIn(delay: 500.ms, duration: 650.ms)
+                    .scale(begin: const Offset(0.94, 0.94), duration: 650.ms),
+                const SizedBox(height: 28),
+                Center(
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Loading games...'),
+                          backgroundColor: AppColors.primary,
+                        ),
+                      );
+                      try {
+                        await games.loadLibrary();
+                        if (!context.mounted) return;
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (context) => games.GamesPage(),
+                          ),
+                        );
+                      } catch (error) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Could not load games: $error')),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.sports_esports_outlined),
+                    label: const Text('Bored? Try a game'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.cardColor,
+                      foregroundColor: AppColors.secondary,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 28,
+                        vertical: 17,
+                      ),
+                    ),
+                  ),
+                )
+                    .animate()
+                    .fadeIn(delay: 640.ms, duration: 650.ms)
+                    .scale(begin: const Offset(0.94, 0.94), duration: 650.ms),
+                const SizedBox(height: 48),
+                const Text(
+                  'Designed & built by Mohammad Parsa Malek',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 12, color: AppColors.textBody),
+                )
+                    .animate()
+                    .fadeIn(delay: 780.ms, duration: 650.ms)
+                    .slideY(begin: 0.04, duration: 650.ms),
+              ],
+            ),
           ),
         ),
-        const SizedBox(height: 16),
-        const Text(
-          'For collaboration, research, or project inquiries, feel free to contact me.',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16, color: AppColors.textBody, height: 1.6),
-        ),
-        const SizedBox(height: 24),
-        Wrap(
-          alignment: WrapAlignment.center,
-          spacing: 16,
-          children: [
-            IconButton(
-              icon: const Icon(FontAwesomeIcons.linkedin),
-              color: AppColors.secondary,
-              iconSize: 29,
-              tooltip: 'LinkedIn',
-              onPressed: () => _launchUrl(
-                context,
-                'https://www.linkedin.com/in/mohamadparsa-malek-0214322a2',
-              ),
-            ),
-            IconButton(
-              icon: const Icon(FontAwesomeIcons.telegram),
-              color: AppColors.secondary,
-              iconSize: 29,
-              tooltip: 'Telegram',
-              onPressed: () => _launchUrl(context, 'https://t.me/TheLordMpM'),
-            ),
-            IconButton(
-              icon: const Icon(Icons.email_outlined),
-              color: AppColors.secondary,
-              iconSize: 29,
-              tooltip: 'Email',
-              onPressed: () => _launchUrl(
-                context,
-                'mailto:mohamadparsamalek.30@gmail.com',
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 22),
-        OutlinedButton.icon(
-          onPressed: () => _openResume(context),
-          icon: const Icon(Icons.download),
-          label: const Text('Download Full CV'),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: AppColors.secondary,
-            side: const BorderSide(color: AppColors.secondary),
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 17),
-          ),
-        ),
-        const SizedBox(height: 28),
-        ElevatedButton.icon(
-          onPressed: () async {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Loading games...'),
-                backgroundColor: AppColors.primary,
-              ),
-            );
-            try {
-              await games.loadLibrary();
-              if (!context.mounted) return;
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (context) => games.GamesPage(),
-                ),
-              );
-            } catch (error) {
-              if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Could not load games: $error')),
-              );
-            }
-          },
-          icon: const Icon(Icons.sports_esports_outlined),
-          label: const Text('Bored? Try a game'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.cardColor,
-            foregroundColor: AppColors.secondary,
-            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 17),
-          ),
-        ),
-        const SizedBox(height: 48),
-        const Text(
-          'Designed & built by Mohammad Parsa Malek',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 12, color: AppColors.textBody),
-        ),
-      ],
-    ).animate().fadeIn(duration: 700.ms).slideY(begin: 0.12);
+      ),
+    ).animate().fadeIn(duration: 700.ms).slideY(begin: 0.06);
   }
 }
 
@@ -1080,6 +1225,14 @@ class SectionTitle extends StatelessWidget {
           fontWeight: FontWeight.bold,
           color: AppColors.textHeader,
         ),
+      )
+          .animate()
+          .fadeIn(duration: 650.ms, curve: Curves.easeOutCubic)
+          .slideX(begin: -0.055, duration: 650.ms, curve: Curves.easeOutCubic)
+          .shimmer(
+        delay: 700.ms,
+        duration: 1100.ms,
+        color: AppColors.secondary.withAlpha(30),
       ),
     );
   }
@@ -1220,7 +1373,10 @@ class ExperienceTile extends StatelessWidget {
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
-                ),
+                )
+                    .animate()
+                    .fadeIn(delay: 90.ms, duration: 450.ms)
+                    .slideX(begin: -0.04, duration: 450.ms),
                 const SizedBox(height: 8),
                 Text(
                   title,
@@ -1229,9 +1385,15 @@ class ExperienceTile extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     fontSize: 19,
                   ),
-                ),
+                )
+                    .animate()
+                    .fadeIn(delay: 190.ms, duration: 500.ms)
+                    .slideX(begin: -0.035, duration: 500.ms),
                 const SizedBox(height: 6),
-                companyName,
+                companyName
+                    .animate()
+                    .fadeIn(delay: 280.ms, duration: 450.ms)
+                    .slideX(begin: 0.04, duration: 450.ms),
                 const SizedBox(height: 12),
                 Text(
                   description,
@@ -1240,7 +1402,10 @@ class ExperienceTile extends StatelessWidget {
                     fontSize: 14,
                     height: 1.6,
                   ),
-                ),
+                )
+                    .animate()
+                    .fadeIn(delay: 390.ms, duration: 600.ms)
+                    .slideY(begin: 0.045, duration: 600.ms),
               ],
             ),
           ),
@@ -1286,7 +1451,10 @@ class EducationCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
-                  ),
+                  )
+                      .animate()
+                      .fadeIn(delay: 100.ms, duration: 550.ms)
+                      .slideX(begin: -0.05, duration: 550.ms),
                   const SizedBox(height: 7),
                   Text(
                     institution,
@@ -1294,7 +1462,10 @@ class EducationCard extends StatelessWidget {
                       color: AppColors.secondary,
                       fontWeight: FontWeight.w600,
                     ),
-                  ),
+                  )
+                      .animate()
+                      .fadeIn(delay: 220.ms, duration: 550.ms)
+                      .slideX(begin: 0.04, duration: 550.ms),
                   const SizedBox(height: 6),
                   Text(
                     period,
@@ -1302,7 +1473,10 @@ class EducationCard extends StatelessWidget {
                       color: AppColors.textBody,
                       fontSize: 13,
                     ),
-                  ),
+                  )
+                      .animate()
+                      .fadeIn(delay: 340.ms, duration: 550.ms)
+                      .slideY(begin: 0.05, duration: 550.ms),
                 ],
               ),
             ),
@@ -1353,7 +1527,10 @@ class ProjectTile extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
                   ),
-                ),
+                )
+                    .animate()
+                    .fadeIn(duration: 420.ms)
+                    .slideX(begin: -0.035, duration: 420.ms),
                 const SizedBox(height: 5),
                 Text(
                   description,
@@ -1362,7 +1539,10 @@ class ProjectTile extends StatelessWidget {
                     height: 1.5,
                     fontSize: 13,
                   ),
-                ),
+                )
+                    .animate()
+                    .fadeIn(delay: 110.ms, duration: 500.ms)
+                    .slideY(begin: 0.045, duration: 500.ms),
               ],
             ),
           ),
@@ -1402,7 +1582,10 @@ class CertificateTile extends StatelessWidget {
                     color: AppColors.textHeader,
                     fontWeight: FontWeight.bold,
                   ),
-                ),
+                )
+                    .animate()
+                    .fadeIn(duration: 450.ms)
+                    .slideX(begin: -0.04, duration: 450.ms),
                 const SizedBox(height: 5),
                 Text(
                   issuer,
@@ -1411,7 +1594,10 @@ class CertificateTile extends StatelessWidget {
                     height: 1.5,
                     fontSize: 13,
                   ),
-                ),
+                )
+                    .animate()
+                    .fadeIn(delay: 130.ms, duration: 520.ms)
+                    .slideY(begin: 0.04, duration: 520.ms),
               ],
             ),
           ),
@@ -1445,10 +1631,64 @@ Future<void> _launchUrl(BuildContext context, String target) async {
   }
 }
 
-Future<void> _openResume(BuildContext context) async {
-  // Put the PDF at: web/files/Mohammad-Parsa-Malek-Resume.pdf
-  // Uri.base.resolve keeps this working for both root and project GitHub Pages.
-  final Uri resumeUri =
-  Uri.base.resolve('files/Mohammad-Parsa-Malek-Resume.pdf');
-  await _launchUrl(context, resumeUri.toString());
+Uri _resumeUri() {
+  return Uri.base.resolve('assets/assets/Mohammad_Parsa_Malek_Resume.pdf');
+}
+
+Future<void> _viewResume(BuildContext context) async {
+  final Uri uri = _resumeUri();
+  try {
+    final bool opened = await launchUrl(
+      uri,
+      webOnlyWindowName: '_blank',
+    );
+    if (!opened && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open the resume PDF.')),
+      );
+    }
+  } catch (error) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not open the resume: $error')),
+      );
+    }
+  }
+}
+
+void _downloadResume(BuildContext context) {
+  final Uri uri = _resumeUri();
+
+  final web.HTMLAnchorElement downloadLink =
+  web.HTMLAnchorElement()
+    ..href = uri.toString()
+    ..download = 'Mohammad-Parsa-Malek-Resume.pdf'
+    ..style.display = 'none';
+
+  final body = web.document.body;
+
+  if (body == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('The browser could not start the download.'),
+      ),
+    );
+    return;
+  }
+
+  try {
+    body.append(downloadLink);
+    downloadLink.click();
+    downloadLink.remove();
+  } catch (error) {
+    downloadLink.remove();
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Download failed: $error'),
+        ),
+      );
+    }
+  }
 }
