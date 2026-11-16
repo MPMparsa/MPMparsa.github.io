@@ -520,7 +520,7 @@ class AboutSection extends StatelessWidget {
                 .animate()
                 .fadeIn(delay: 370.ms, duration: 480.ms)
                 .slideX(begin: -0.04, duration: 480.ms),
-            const InfoRow(label: 'Phone', value: '09900100336')
+            const InfoRow(label: 'Phone', value: '+989900100336')
                 .animate()
                 .fadeIn(delay: 440.ms, duration: 480.ms)
                 .slideX(begin: -0.04, duration: 480.ms),
